@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\AkunController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProdukController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +35,18 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// ---------- Area pelanggan (login) ----------
+Route::middleware('auth')->group(function () {
+    Route::get('/akun', [AkunController::class, 'profil'])->name('akun.profil');
+    Route::patch('/akun', [AkunController::class, 'updateProfil'])->name('akun.profil.update');
+    Route::patch('/akun/password', [AkunController::class, 'updatePassword'])->name('akun.password');
+    Route::get('/akun/pesanan', [AkunController::class, 'pesanan'])->name('akun.pesanan');
+
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::get('/notifikasi/{notifikasi}', [NotifikasiController::class, 'buka'])->name('notifikasi.buka');
+    Route::post('/notifikasi/baca-semua', [NotifikasiController::class, 'bacaSemua'])->name('notifikasi.baca-semua');
+});
 
 // ---------- Admin ----------
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

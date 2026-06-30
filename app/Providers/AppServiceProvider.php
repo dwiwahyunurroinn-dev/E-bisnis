@@ -26,6 +26,19 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.app', function ($view) {
             $view->with('navKategori', Kategori::orderBy('nama')->get());
             $view->with('cartCount', app(CartService::class)->jumlahItem());
+
+            if ($user = auth()->user()) {
+                $view->with('notifBelum', $user->notifikasi()->belumDibaca()->count());
+                $view->with('notifList', $user->notifikasi()->latest()->take(6)->get());
+            }
+        });
+
+        // Lonceng notifikasi pada panel admin.
+        View::composer('layouts.admin', function ($view) {
+            if ($user = auth()->user()) {
+                $view->with('notifBelum', $user->notifikasi()->belumDibaca()->count());
+                $view->with('notifList', $user->notifikasi()->latest()->take(6)->get());
+            }
         });
     }
 }

@@ -5,8 +5,8 @@
 @section('content')
 <div class="panel" style="margin-top:0;">
     <div class="toolbar">
-        <h2 style="margin:0;">🔑 Pengguna Sistem</h2>
-        <a href="{{ route('admin.user.create') }}" class="btn btn-primary">＋ Tambah User</a>
+        <h2 style="margin:0;"> Pengguna Sistem</h2>
+        <a href="{{ route('admin.user.create') }}" class="btn btn-primary">+ Tambah User</a>
     </div>
     <table>
         <thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>Status</th><th>Aksi</th></tr></thead>

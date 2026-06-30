@@ -10,24 +10,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary:      #3aa17e;   /* hijau soft */
-            --primary-dark: #2c8064;
-            --primary-deep: #1f6b52;
-            --primary-soft: #eaf6f1;
-            --primary-mint: #f4faf7;
-            --accent:       #e8a951;
+            --primary:      #00a868;   /* hijau profesional (ala Tokopedia) */
+            --primary-dark: #048a55;
+            --primary-deep: #03734a;
+            --primary-soft: #e7f7ef;
+            --primary-mint: #f4fbf8;
+            --accent:       #ff8a3d;   /* aksen oranye hangat */
+            --star:         #ffb400;
             --danger:       #e2574c;
-            --ink:          #213a32;
-            --ink-soft:     #6a7d75;
-            --line:         #e9efeb;
-            --bg:           #f3f8f5;
+            --ink:          #1f2a37;   /* abu netral profesional */
+            --ink-soft:     #66727f;
+            --line:         #eceff3;
+            --bg:           #f5f6f8;
             --white:        #ffffff;
-            --radius:       16px;
-            --shadow-sm:    0 2px 8px rgba(31,107,82,.06);
-            --shadow-md:    0 8px 24px rgba(31,107,82,.10);
-            --shadow-lg:    0 18px 48px rgba(31,107,82,.16);
+            --radius:       14px;
+            --shadow-sm:    0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
+            --shadow-md:    0 6px 18px rgba(16,24,40,.08);
+            --shadow-lg:    0 16px 40px rgba(16,24,40,.14);
             --ease:         cubic-bezier(.22,.61,.36,1);
         }
+        .ico { display: inline-block; vertical-align: middle; flex-shrink: 0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body {
@@ -93,6 +95,31 @@
         .cart-badge { position: absolute; top: 0; right: 4px; background: var(--danger); color: #fff; font-size: .65rem; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: grid; place-items: center; padding: 0 4px; }
         .cart-badge.pop { animation: pop .4s var(--ease); }
 
+        /* Dropdown akun */
+        .acct { position: relative; }
+        .acct-menu { position: absolute; right: 0; top: calc(100% + 8px); background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-lg); min-width: 190px; padding: 6px; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all .18s var(--ease); z-index: 60; }
+        .acct.open .acct-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .acct-menu a, .acct-menu button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 10px 12px; border-radius: 9px; font-size: .88rem; font-weight: 600; color: var(--ink); background: none; border: none; cursor: pointer; font-family: inherit; text-align: left; }
+        .acct-menu a:hover, .acct-menu button:hover { background: var(--primary-soft); color: var(--primary-deep); }
+
+        /* Lonceng notifikasi */
+        .notif { position: relative; }
+        .notif-btn { position: relative; }
+        .notif-dot { position: absolute; top: 4px; right: 8px; min-width: 17px; height: 17px; padding: 0 4px; background: var(--danger); color: #fff; font-size: .64rem; font-weight: 700; border-radius: 9px; display: grid; place-items: center; }
+        .notif-panel { position: absolute; right: 0; top: calc(100% + 8px); width: 340px; max-width: 90vw; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all .18s var(--ease); z-index: 60; overflow: hidden; }
+        .notif.open .notif-panel { opacity: 1; visibility: visible; transform: translateY(0); }
+        .notif-panel .nhead { display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line); font-weight: 700; font-size: .9rem; }
+        .notif-panel .nhead a { font-size: .78rem; color: var(--primary); font-weight: 600; }
+        .notif-list { max-height: 360px; overflow-y: auto; }
+        .notif-list a { display: flex; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); transition: background .15s; }
+        .notif-list a:hover { background: var(--primary-mint); }
+        .notif-list a.unread { background: #f0f9f4; }
+        .notif-list .ni-ico { width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px; background: var(--primary-soft); color: var(--primary-deep); display: grid; place-items: center; }
+        .notif-list .ni-body b { font-size: .85rem; display: block; }
+        .notif-list .ni-body span { font-size: .78rem; color: var(--ink-soft); }
+        .notif-list .ni-body time { font-size: .72rem; color: var(--ink-soft); }
+        .notif-empty { padding: 36px 16px; text-align: center; color: var(--ink-soft); font-size: .85rem; }
+
         /* ============ CATEGORY NAV ============ */
         .catnav { background: var(--white); border-top: 1px solid var(--line); position: sticky; top: 72px; z-index: 40; }
         .catnav .container { display: flex; gap: 8px; overflow-x: auto; padding: 10px 20px; scrollbar-width: none; }
@@ -108,7 +135,7 @@
             background: linear-gradient(120deg, #3aa17e, #2c8064, #1f6b52, #2c8064);
             background-size: 300% 300%; animation: gradientMove 12s ease infinite;
         }
-        .hero-banner::after { content: "🌿"; position: absolute; right: 50px; bottom: 0; font-size: 11rem; opacity: .15; animation: float 6s ease-in-out infinite; }
+        .hero-banner::after { content: ""; position: absolute; right: 50px; bottom: 0; font-size: 11rem; opacity: .15; animation: float 6s ease-in-out infinite; }
         .hero-banner h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.18; max-width: 580px; animation: fadeUp .7s var(--ease) both; }
         .hero-banner p { margin-top: 12px; opacity: .92; max-width: 480px; animation: fadeUp .7s .12s var(--ease) both; }
         .hero-cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; background: #fff; color: var(--primary-deep); font-weight: 700; padding: 13px 28px; border-radius: 12px; animation: fadeUp .7s .24s var(--ease) both; transition: transform .2s var(--ease), box-shadow .2s; }
@@ -147,7 +174,8 @@
         .pprice { font-size: 1.08rem; font-weight: 800; margin-top: 2px; }
         .pprice-old { font-size: .76rem; color: var(--ink-soft); text-decoration: line-through; }
         .pmeta { display: flex; align-items: center; gap: 6px; font-size: .76rem; color: var(--ink-soft); margin-top: auto; padding-top: 6px; }
-        .stars { color: var(--accent); font-weight: 700; }
+        .stars { color: var(--star); font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
+        .stars .ico { color: var(--star); }
 
         /* ============ BUTTONS ============ */
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 22px; border: none; border-radius: 12px; font-size: .96rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: transform .15s var(--ease), background .15s, box-shadow .15s; }
@@ -182,7 +210,7 @@
         .qty input { width: 46px; height: 36px; text-align: center; border: none; font-size: 1rem; font-family: inherit; font-weight: 600; background: #fff; }
 
         /* ============ TOAST ============ */
-        .toast { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); z-index: 100; padding: 13px 22px; border-radius: 12px; font-weight: 600; font-size: .9rem; box-shadow: var(--shadow-lg); animation: toastIn .35s var(--ease) both; }
+        .toast { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); z-index: 100; padding: 13px 22px; border-radius: 12px; font-weight: 600; font-size: .9rem; box-shadow: var(--shadow-lg); animation: toastIn .35s var(--ease) both; display: inline-flex; align-items: center; gap: 8px; }
         .toast.sukses { background: var(--primary); color: #fff; }
         .toast.error { background: var(--danger); color: #fff; }
 
@@ -205,34 +233,45 @@
 <body>
     <div class="topbar">
         <div class="container">
-            <span>♻️ Furnitur dari 100% kayu daur ulang — ramah lingkungan</span>
-            <span>
-                <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener">📷 @{{ config('toko.instagram') }}</a>
-                &nbsp;·&nbsp; <a href="#">Bantuan</a> &nbsp;·&nbsp; <a href="#">Lacak Pesanan</a>
+            <span style="display:inline-flex;align-items:center;gap:6px;"><x-icon name="recycle" :size="14"/> Furnitur dari 100% kayu daur ulang — ramah lingkungan</span>
+            <span style="display:inline-flex;align-items:center;gap:14px;">
+                <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;"><x-icon name="instagram" :size="14"/> @{{ config('toko.instagram') }}</a>
+                <a href="#">Bantuan</a> <a href="#">Lacak Pesanan</a>
             </span>
         </div>
     </div>
 
     <header>
         <div class="container header-main">
-            <a href="{{ route('produk.index') }}" class="logo"><span class="leaf">🌿</span> Eco<b>Craft</b></a>
+            <a href="{{ route('produk.index') }}" class="logo"><x-logo :size="38"/></a>
             <div class="searchbar">
                 <form action="{{ route('produk.index') }}" method="get">
                     <input type="text" name="q" placeholder="Cari meja belajar, rak buku, kursi cafe..." value="{{ request('q') }}">
-                    <button type="submit" aria-label="Cari">🔍</button>
+                    <button type="submit" aria-label="Cari"><x-icon name="search" :size="18"/></button>
                 </form>
             </div>
             <div class="header-actions">
+                @auth
+                    @include('partials.notifikasi')
+                @endauth
                 <a href="{{ route('keranjang.index') }}" class="icon-btn cart-wrap">
-                    🛒 <span class="label">Keranjang</span>
+                    <x-icon name="cart"/> <span class="label">Keranjang</span>
                     <span class="cart-badge" id="cartBadge" {{ ($cartCount ?? 0) ? '' : 'style=display:none' }}>{{ $cartCount ?? 0 }}</span>
                 </a>
                 @auth
                     @if (auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="icon-btn">📊 <span class="label">Dashboard</span></a>
+                        <a href="{{ route('admin.dashboard') }}" class="icon-btn"><x-icon name="dashboard"/> <span class="label">Dashboard</span></a>
                     @endif
-                    <a href="#" class="icon-btn solid">👤 <span class="label">{{ Str::limit(auth()->user()->name, 12) }}</span></a>
-                    <form method="POST" action="{{ route('logout') }}">@csrf<button class="icon-btn" type="submit" style="border:none;background:none;cursor:pointer;font-family:inherit;">↩ <span class="label">Keluar</span></button></form>
+                    <div class="acct">
+                        <button class="icon-btn solid" type="button" onclick="this.parentElement.classList.toggle('open')">
+                            <x-icon name="user"/> <span class="label">{{ Str::limit(auth()->user()->name, 10) }}</span>
+                        </button>
+                        <div class="acct-menu">
+                            <a href="{{ route('akun.profil') }}"><x-icon name="user" :size="16"/> Profil Saya</a>
+                            <a href="{{ route('akun.pesanan') }}"><x-icon name="clipboard" :size="16"/> Pesanan Saya</a>
+                            <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit"><x-icon name="logout" :size="16"/> Keluar</button></form>
+                        </div>
+                    </div>
                 @else
                     <a href="{{ route('login') }}" class="icon-btn">Masuk</a>
                     <a href="{{ route('register') }}" class="icon-btn solid">Daftar</a>
@@ -241,7 +280,7 @@
         </div>
         <div class="catnav">
             <div class="container">
-                <a href="{{ route('produk.index') }}" class="cat-pill {{ request('kategori') ? '' : 'active' }}">🏠 Semua</a>
+                <a href="{{ route('produk.index') }}" class="cat-pill {{ request('kategori') ? '' : 'active' }}">Semua Produk</a>
                 @foreach (($navKategori ?? collect()) as $k)
                     <a href="{{ route('produk.index', ['kategori' => $k->slug]) }}" class="cat-pill {{ request('kategori') === $k->slug ? 'active' : '' }}">{{ $k->nama }}</a>
                 @endforeach
@@ -250,9 +289,9 @@
     </header>
 
     @if (session('sukses'))
-        <div class="toast sukses" data-toast>✅ {{ session('sukses') }}</div>
+        <div class="toast sukses" data-toast><x-icon name="check-circle" :size="18"/> {{ session('sukses') }}</div>
     @elseif (session('error'))
-        <div class="toast error" data-toast>⚠️ {{ session('error') }}</div>
+        <div class="toast error" data-toast><x-icon name="alert" :size="18"/> {{ session('error') }}</div>
     @endif
 
     @yield('content')
@@ -261,16 +300,20 @@
         <div class="container">
             <div class="foot-grid">
                 <div>
-                    <h4 style="color:#fff;font-size:1.2rem;">🌿 {{ config('toko.nama') }}</h4>
+                    <div style="margin-bottom:12px;"><x-logo :size="38" light /></div>
                     <p>{{ config('toko.tagline') }}. Setiap pembelian Anda membantu mengurangi limbah kayu.</p>
-                    <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" style="font-weight:600;color:#fff;">📷 @{{ config('toko.instagram') }}</a>
+                    <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" style="font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:6px;"><x-icon name="instagram" :size="16"/> @{{ config('toko.instagram') }}</a>
                 </div>
-                <div><h4>Belanja</h4><a href="{{ route('produk.index') }}">Semua Produk</a><a href="#">Produk Terlaris</a><a href="#">Promo & Bundle</a></div>
+                <div><h4>Belanja</h4><a href="{{ route('produk.index') }}">Semua Produk</a><a href="{{ route('produk.index', ['sort' => 'terlaris']) }}">Produk Terlaris</a><a href="#">Promo & Bundle</a></div>
                 <div><h4>Bantuan</h4><a href="#">Cara Belanja</a><a href="#">Pengiriman</a><a href="#">Kebijakan Retur</a></div>
-                <div><h4>Hubungi Kami</h4><p>📧 {{ config('toko.email') }}</p><p>📱 {{ config('toko.telepon') }}</p><p>📷 @{{ config('toko.instagram') }}</p></div>
+                <div><h4>Hubungi Kami</h4>
+                    <p style="display:flex;align-items:center;gap:7px;"><x-icon name="mail" :size="15"/> {{ config('toko.email') }}</p>
+                    <p style="display:flex;align-items:center;gap:7px;"><x-icon name="phone" :size="15"/> {{ config('toko.telepon') }}</p>
+                    <p style="display:flex;align-items:center;gap:7px;"><x-icon name="instagram" :size="15"/> @{{ config('toko.instagram') }}</p>
+                </div>
             </div>
         </div>
-        <div class="foot-bottom">© {{ date('Y') }} {{ config('toko.nama') }} — Dibuat dengan ❤️ untuk bumi.</div>
+        <div class="foot-bottom">© {{ date('Y') }} {{ config('toko.nama') }} — Dibuat dengan  untuk bumi.</div>
     </footer>
 
     <script>
@@ -287,6 +330,13 @@
         document.querySelectorAll('[data-toast]').forEach(t => {
             setTimeout(() => { t.style.transition = 'opacity .4s, transform .4s'; t.style.opacity = '0'; t.style.transform = 'translate(-50%,-16px)'; }, 2600);
             setTimeout(() => t.remove(), 3100);
+        });
+
+        // Tutup dropdown (akun & notifikasi) saat klik di luar
+        document.addEventListener('click', (e) => {
+            document.querySelectorAll('.acct.open, .notif.open').forEach(el => {
+                if (!el.contains(e.target)) el.classList.remove('open');
+            });
         });
     </script>
     @yield('scripts')

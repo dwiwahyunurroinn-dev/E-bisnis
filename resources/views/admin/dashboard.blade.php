@@ -9,31 +9,31 @@
 @section('content')
 <div class="cards">
     <div class="stat">
-        <div class="lbl">💰 Penjualan Hari Ini</div>
+        <div class="lbl"><x-icon name="tag" :size="16"/> Penjualan Hari Ini</div>
         <div class="val sm">Rp{{ number_format($penjualanHariIni, 0, ',', '.') }}</div>
     </div>
     <div class="stat">
-        <div class="lbl">📅 Penjualan Bulan Ini</div>
+        <div class="lbl"><x-icon name="chart" :size="16"/> Penjualan Bulan Ini</div>
         <div class="val sm">Rp{{ number_format($penjualanBulanIni, 0, ',', '.') }}</div>
     </div>
     <div class="stat">
-        <div class="lbl">🧾 Pesanan Pending</div>
+        <div class="lbl"><x-icon name="clock" :size="16"/> Pesanan Pending</div>
         <div class="val">{{ $pesananPending }}</div>
     </div>
     <div class="stat">
-        <div class="lbl">👥 Total Pelanggan</div>
+        <div class="lbl"><x-icon name="users" :size="16"/> Total Pelanggan</div>
         <div class="val">{{ $totalPelanggan }}</div>
     </div>
 </div>
 
 <div class="panel">
-    <h2>📈 Tren Penjualan 7 Hari Terakhir</h2>
+    <h2><x-icon name="chart" :size="18"/> Tren Penjualan 7 Hari Terakhir</h2>
     <canvas id="chartPenjualan" height="90"></canvas>
 </div>
 
 <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:18px;">
     <div class="panel" style="margin-top:0;">
-        <h2>🛒 Pesanan Terbaru <a href="{{ route('admin.pesanan.index') }}" class="btn btn-outline btn-sm">Lihat Semua</a></h2>
+        <h2> Pesanan Terbaru <a href="{{ route('admin.pesanan.index') }}" class="btn btn-outline btn-sm">Lihat Semua</a></h2>
         <table>
             <thead><tr><th>Kode</th><th>Pelanggan</th><th>Total</th><th>Status</th></tr></thead>
             <tbody>
@@ -52,7 +52,7 @@
     </div>
 
     <div class="panel" style="margin-top:0;">
-        <h2>⚠️ Stok Menipis</h2>
+        <h2> Stok Menipis</h2>
         <table>
             <thead><tr><th>Produk</th><th>Stok</th></tr></thead>
             <tbody>
@@ -62,7 +62,7 @@
                         <td><span class="badge {{ $s->stok == 0 ? 'b-batal' : 'b-pending' }}">{{ $s->stok }} unit</span></td>
                     </tr>
                 @empty
-                    <tr><td colspan="2" class="empty-row">Semua stok aman 👍</td></tr>
+                    <tr><td colspan="2" class="empty-row">Semua stok aman </td></tr>
                 @endforelse
             </tbody>
         </table>

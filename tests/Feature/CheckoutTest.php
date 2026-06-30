@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Kategori;
+use App\Models\Notifikasi;
 use App\Models\Pesanan;
 use App\Models\Produk;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -65,6 +67,25 @@ class CheckoutTest extends TestCase
         $this->assertEquals(200000, $pesanan->subtotal);
         $this->assertGreaterThan(0, $pesanan->ongkir);
         $this->assertCount(1, $pesanan->detail);
+    }
+
+    public function test_checkout_membuat_notifikasi_admin_dan_pelanggan(): void
+    {
+        User::create(['name' => 'Admin', 'email' => 'admin@x.com', 'password' => 'password', 'role' => 'admin']);
+        $p = $this->produk(10);
+        $this->post(route('keranjang.tambah', $p), ['qty' => 1]);
+
+        $this->post(route('checkout.store'), [
+            'nama'           => 'Budi',
+            'email'          => 'budi@contoh.com',
+            'telepon'        => '08123',
+            'kota'           => 'Jakarta',
+            'alamat_lengkap' => 'Jl. Mawar',
+            'pengiriman'     => 'jne|REG',
+        ]);
+
+        $this->assertDatabaseHas('notifikasis', ['tipe' => 'pesanan']);   // ke admin
+        $this->assertDatabaseHas('notifikasis', ['tipe' => 'status']);    // ke pelanggan
     }
 
     public function test_pembayaran_mengurangi_stok(): void

@@ -9,7 +9,7 @@
             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari produk...">
             <button class="btn btn-outline btn-sm">Cari</button>
         </form>
-        <a href="{{ route('admin.produk.create') }}" class="btn btn-primary">＋ Tambah Produk</a>
+        <a href="{{ route('admin.produk.create') }}" class="btn btn-primary">+ Tambah Produk</a>
     </div>
 
     <table>

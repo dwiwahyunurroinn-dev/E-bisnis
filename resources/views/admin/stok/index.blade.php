@@ -5,7 +5,7 @@
 @section('content')
 <div class="panel" style="margin-top:0;">
     <div class="toolbar">
-        <h2 style="margin:0;">📦 Stok Produk</h2>
+        <h2 style="margin:0;"> Stok Produk</h2>
         <form class="search" method="get">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari produk...">
             <button class="btn btn-outline btn-sm">Cari</button>
@@ -36,7 +36,7 @@
 </div>
 
 <div class="panel">
-    <h2>🪵 Stok Bahan Baku (Supply Chain)</h2>
+    <h2> Stok Bahan Baku (Supply Chain)</h2>
     <table>
         <thead><tr><th>Bahan Baku</th><th>Satuan</th><th>Stok</th><th>Ubah</th></tr></thead>
         <tbody>

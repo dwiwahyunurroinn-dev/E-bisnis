@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use App\Models\Alamat;
 use App\Models\DetailPesanan;
+use App\Models\Notifikasi;
 use App\Models\Pesanan;
 use App\Models\User;
 use App\Services\CartService;
@@ -67,8 +68,8 @@ class CheckoutController extends Controller
         $total    = $subtotal + $opsi['ongkir'];
 
         $pesanan = DB::transaction(function () use ($data, $items, $subtotal, $opsi, $total, $kurir) {
-            // Guest checkout: cari/buat user berdasar email.
-            $user = User::firstOrCreate(
+            // Jika sudah login pakai akun tsb, jika tidak (guest) cari/buat via email.
+            $user = auth()->user() ?? User::firstOrCreate(
                 ['email' => $data['email']],
                 ['name' => $data['nama'], 'password' => bcrypt(Str::random(16))],
             );
@@ -111,6 +112,18 @@ class CheckoutController extends Controller
 
         $this->cart->kosongkan();
         ActivityLog::catat('pesanan baru', $pesanan->kode, 'Total Rp'.number_format($total, 0, ',', '.'));
+
+        // Notifikasi ke admin
+        Notifikasi::keSemuaAdmin(
+            'Pesanan baru masuk',
+            $pesanan->kode.' senilai Rp'.number_format($total, 0, ',', '.'),
+            route('admin.pesanan.show', $pesanan),
+            'pesanan',
+        );
+        // Notifikasi ke pelanggan
+        Notifikasi::kirim($pesanan->user_id, 'Pesanan dibuat',
+            'Pesanan '.$pesanan->kode.' menunggu pembayaran.',
+            route('pesanan.show', $pesanan->kode), 'status');
 
         return redirect()->route('pesanan.show', $pesanan->kode);
     }

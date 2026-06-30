@@ -44,7 +44,7 @@
                 @if ($produk->persenDiskon() > 0)
                     <span class="badge-disc">-{{ $produk->persenDiskon() }}%</span>
                 @endif
-                <span class="ph-emoji">{{ $produk->emoji() }}</span>
+                <span class="ph-emoji"><x-icon name="sofa" :size="90"/></span>
                 @if ($produk->gambarUrl())<img loading="lazy" decoding="async" src="{{ $produk->gambarUrl() }}" alt="{{ $produk->nama }}" onerror="this.remove()">@endif
             </div>
         </div>
@@ -53,7 +53,7 @@
             <span class="pcat">{{ $produk->kategori->nama }}</span>
             <h1>{{ $produk->nama }}</h1>
             <div class="rating-row">
-                <span class="stars">★ {{ $produk->ratingTampil() }}</span> <span>·</span>
+                <span class="stars"><x-icon name="star" :size="15"/> {{ $produk->ratingTampil() }}</span> <span>·</span>
                 <span>{{ $produk->terjualTampil() }} terjual</span> <span>·</span>
                 <span>{{ $produk->tersedia() ? 'Stok '.$produk->stok.' unit' : 'Stok habis' }}</span>
             </div>
@@ -75,7 +75,7 @@
                     <span class="k" style="color:var(--ink-soft);font-size:.9rem;">Bahan daur ulang</span>
                     <div class="eco-chips">
                         @foreach ($produk->bahanBaku as $bahan)
-                            <span class="eco-chip">♻️ {{ $bahan->nama }}</span>
+                            <span class="eco-chip"><x-icon name="recycle" :size="14"/> {{ $bahan->nama }}</span>
                         @endforeach
                     </div>
                 </div>
@@ -97,7 +97,7 @@
                 <span class="total" id="subtotal">Rp{{ number_format($produk->harga, 0, ',', '.') }}</span>
             </div>
             <button type="submit" name="beli_langsung" value="0" class="btn btn-primary btn-block" {{ $produk->tersedia() ? '' : 'disabled' }}>
-                🛒 {{ $produk->tersedia() ? 'Tambah ke Keranjang' : 'Stok Habis' }}
+                <x-icon name="cart" :size="18"/> {{ $produk->tersedia() ? 'Tambah ke Keranjang' : 'Stok Habis' }}
             </button>
             <button type="submit" name="beli_langsung" value="1" class="btn btn-outline btn-block" style="margin-top:10px;" {{ $produk->tersedia() ? '' : 'disabled' }}>
                 Beli Langsung
@@ -112,14 +112,14 @@
                 <a href="{{ route('produk.show', $p) }}" class="pcard reveal">
                     <div class="pthumb">
                         @if ($p->persenDiskon() > 0)<span class="badge-disc">-{{ $p->persenDiskon() }}%</span>@endif
-                        <span class="ph-emoji">{{ $p->emoji() }}</span>
+                        <span class="ph-emoji"><x-icon name="sofa" :size="52"/></span>
                         @if ($p->gambarUrl())<img loading="lazy" decoding="async" src="{{ $p->gambarUrl() }}" alt="{{ $p->nama }}" onerror="this.remove()">@endif
                     </div>
                     <div class="pbody">
                         <span class="pcat">{{ $p->kategori->nama }}</span>
                         <span class="pname">{{ $p->nama }}</span>
                         <span class="pprice">Rp{{ number_format($p->harga, 0, ',', '.') }}</span>
-                        <div class="pmeta"><span class="stars">★ {{ $p->ratingTampil() }}</span> <span>·</span> <span>{{ $p->terjualTampil() }} terjual</span></div>
+                        <div class="pmeta"><span class="stars"><x-icon name="star" :size="14"/> {{ $p->ratingTampil() }}</span> <span>·</span> <span>{{ $p->terjualTampil() }} terjual</span></div>
                     </div>
                 </a>
             @endforeach

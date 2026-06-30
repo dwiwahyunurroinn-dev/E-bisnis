@@ -16,7 +16,7 @@
 @section('content')
 <div class="container auth-wrap">
     <div class="auth-card">
-        <h1>🌱 Buat Akun Baru</h1>
+        <h1> Buat Akun Baru</h1>
         <p class="sub">Bergabung dengan {{ config('toko.nama') }}</p>
 
         <form method="POST" action="{{ route('register') }}">

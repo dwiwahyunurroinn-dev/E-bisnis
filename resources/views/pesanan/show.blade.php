@@ -28,11 +28,11 @@
     <div class="order-wrap">
         <div class="order-head">
             @if ($pesanan->status === 'pending')
-                <div class="ico">🧾</div>
+                <div class="ico" style="color:var(--accent);"><x-icon name="clock" :size="56"/></div>
                 <h1>Pesanan Berhasil Dibuat</h1>
                 <p>Selesaikan pembayaran untuk memproses pesanan Anda.</p>
             @else
-                <div class="ico">✅</div>
+                <div class="ico" style="color:var(--primary);"><x-icon name="check-circle" :size="56"/></div>
                 <h1>Pembayaran Berhasil</h1>
                 <p>Terima kasih! Pesanan Anda sedang kami siapkan.</p>
             @endif
@@ -64,7 +64,7 @@
         @if ($pesanan->status === 'pending')
             <form method="POST" action="{{ route('pesanan.bayar', $pesanan->kode) }}">
                 @csrf
-                <button type="submit" class="btn btn-primary btn-block">💳 Bayar Sekarang (Simulasi)</button>
+                <button type="submit" class="btn btn-primary btn-block"><x-icon name="card" :size="18"/> Bayar Sekarang</button>
             </form>
             <p style="text-align:center;font-size:.78rem;color:var(--ink-soft);margin-top:10px;">
                 Pembayaran ini tersimulasi. Saat status menjadi <b>Lunas</b>, stok produk otomatis berkurang lewat trigger database.

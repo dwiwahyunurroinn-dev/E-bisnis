@@ -19,7 +19,7 @@
 @section('content')
 <div class="container auth-wrap">
     <div class="auth-card">
-        <h1>👋 Selamat Datang</h1>
+        <h1> Selamat Datang</h1>
         <p class="sub">Masuk ke akun {{ config('toko.nama') }} Anda</p>
 
         <div class="hint">Demo admin: <b>admin@ecocraft.id</b> / <b>password</b></div>

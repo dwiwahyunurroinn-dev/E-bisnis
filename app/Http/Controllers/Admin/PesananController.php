@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\Notifikasi;
 use App\Models\Pesanan;
 use App\Services\PesananService;
 use Illuminate\Http\RedirectResponse;
@@ -45,6 +46,11 @@ class PesananController extends Controller
         }
 
         ActivityLog::catat('mengubah', 'Pesanan '.$pesanan->kode, 'status → '.$data['status']);
+
+        // Beri tahu pelanggan perubahan status pesanannya.
+        Notifikasi::kirim($pesanan->user_id, 'Status pesanan diperbarui',
+            'Pesanan '.$pesanan->kode.' kini berstatus "'.ucfirst($data['status']).'".',
+            route('pesanan.show', $pesanan->kode), 'status');
 
         return back()->with('sukses', 'Status pesanan diperbarui.');
     }

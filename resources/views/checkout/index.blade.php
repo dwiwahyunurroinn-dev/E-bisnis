@@ -27,7 +27,7 @@
 
 @section('content')
 <div class="container">
-    <div class="section-head"><h2>📦 Checkout</h2></div>
+    <div class="section-head"><h2> Checkout</h2></div>
 
     <form method="POST" action="{{ route('checkout.store') }}">
         @csrf
@@ -35,7 +35,7 @@
             <div class="stack">
                 {{-- Alamat --}}
                 <div class="card-panel reveal">
-                    <h3>📍 Alamat Pengiriman</h3>
+                    <h3> Alamat Pengiriman</h3>
                     <div class="two">
                         <div class="field">
                             <label>Nama Penerima</label>
@@ -73,7 +73,7 @@
 
                 {{-- Pengiriman --}}
                 <div class="card-panel reveal">
-                    <h3>🚚 Metode Pengiriman</h3>
+                    <h3> Metode Pengiriman</h3>
                     <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:14px;">Berat total: {{ number_format($beratGram / 1000, 1, ',', '.') }} kg · ongkir dihitung otomatis.</p>
                     @error('pengiriman')<div class="err" style="margin-bottom:10px;">{{ $message }}</div>@enderror
                     @foreach ($opsiOngkir as $idx => $o)
@@ -92,7 +92,7 @@
 
             {{-- Ringkasan --}}
             <div class="card-panel summary reveal">
-                <h3>🧾 Ringkasan Pesanan</h3>
+                <h3> Ringkasan Pesanan</h3>
                 @foreach ($items as $i)
                     <div class="mini-item">
                         <span>{{ $i['produk']->emoji() }} {{ $i['produk']->nama }} <b>×{{ $i['qty'] }}</b></span>

@@ -14,19 +14,19 @@
             <input type="date" name="sampai" value="{{ $sampai }}">
         </div>
         <button class="btn btn-primary">Terapkan</button>
-        <a href="{{ route('admin.laporan.ekspor', ['dari'=>$dari,'sampai'=>$sampai]) }}" class="btn btn-outline">⬇ Ekspor CSV</a>
+        <a href="{{ route('admin.laporan.ekspor', ['dari'=>$dari,'sampai'=>$sampai]) }}" class="btn btn-outline"> Ekspor CSV</a>
     </form>
 </div>
 
 <div class="cards" style="margin-top:18px;">
-    <div class="stat"><div class="lbl">💰 Total Pendapatan</div><div class="val sm">Rp{{ number_format($totalPendapatan,0,',','.') }}</div></div>
-    <div class="stat"><div class="lbl">✅ Pesanan Terbayar</div><div class="val">{{ $totalTerbayar }}</div></div>
-    <div class="stat"><div class="lbl">📦 Total Pesanan</div><div class="val">{{ $totalPesanan }}</div></div>
-    <div class="stat"><div class="lbl">📊 Rata-rata Order</div><div class="val sm">Rp{{ number_format($rataRata,0,',','.') }}</div></div>
+    <div class="stat"><div class="lbl"> Total Pendapatan</div><div class="val sm">Rp{{ number_format($totalPendapatan,0,',','.') }}</div></div>
+    <div class="stat"><div class="lbl"> Pesanan Terbayar</div><div class="val">{{ $totalTerbayar }}</div></div>
+    <div class="stat"><div class="lbl"> Total Pesanan</div><div class="val">{{ $totalPesanan }}</div></div>
+    <div class="stat"><div class="lbl"> Rata-rata Order</div><div class="val sm">Rp{{ number_format($rataRata,0,',','.') }}</div></div>
 </div>
 
 <div class="panel">
-    <h2>📅 Rincian Harian</h2>
+    <h2> Rincian Harian</h2>
     <table>
         <thead><tr><th>Tanggal</th><th>Jumlah Pesanan</th><th>Pendapatan</th></tr></thead>
         <tbody>

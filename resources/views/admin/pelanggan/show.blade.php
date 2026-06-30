@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="panel" style="margin-top:0;max-width:560px;">
-    <h2>👤 {{ $pelanggan->name }}</h2>
+    <h2> {{ $pelanggan->name }}</h2>
     <p style="font-size:.9rem;line-height:1.9;">
         <b>Email:</b> {{ $pelanggan->email }}<br>
         <b>Telepon:</b> {{ $pelanggan->telepon ?? '-' }}<br>
@@ -14,7 +14,7 @@
 </div>
 
 <div class="panel">
-    <h2>🧾 Riwayat Pesanan ({{ $pelanggan->pesanan->count() }})</h2>
+    <h2> Riwayat Pesanan ({{ $pelanggan->pesanan->count() }})</h2>
     <table>
         <thead><tr><th>Kode</th><th>Tanggal</th><th>Total</th><th>Status</th><th></th></tr></thead>
         <tbody>

@@ -5,7 +5,7 @@
 @section('content')
 <div class="panel" style="margin-top:0;">
     <div class="toolbar">
-        <h2 style="margin:0;">📜 Log Aktivitas Sistem</h2>
+        <h2 style="margin:0;"> Log Aktivitas Sistem</h2>
         <form class="search" method="get">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari aktivitas...">
             <button class="btn btn-outline btn-sm">Cari</button>

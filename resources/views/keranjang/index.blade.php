@@ -26,12 +26,12 @@
 
 @section('content')
 <div class="container">
-    <div class="section-head"><h2>🛒 Keranjang Belanja</h2><span class="sub">{{ $items->sum('qty') }} item</span></div>
+    <div class="section-head"><h2>Keranjang Belanja</h2><span class="sub">{{ $items->sum('qty') }} item</span></div>
 
     @if ($items->isEmpty())
         <div class="empty">
-            <div class="big">🛒</div>
-            <p>Keranjang Anda masih kosong.</p>
+            <x-mascot :size="140" />
+            <p style="margin-top:8px;">Keranjang Anda masih kosong.</p>
             <a href="{{ route('produk.index') }}" class="btn btn-primary" style="margin-top:18px;">Mulai Belanja</a>
         </div>
     @else
@@ -40,7 +40,7 @@
                 @foreach ($items as $i)
                     <div class="cart-item">
                         <a href="{{ route('produk.show', $i['produk']) }}" class="ci-thumb">
-                            <span>{{ $i['produk']->emoji() }}</span>
+                            <span style="color:var(--primary)"><x-icon name="sofa" :size="30"/></span>
                             @if ($i['produk']->gambarUrl())<img loading="lazy" src="{{ $i['produk']->gambarUrl() }}" alt="" onerror="this.remove()">@endif
                         </a>
                         <div class="ci-info">
@@ -51,7 +51,7 @@
                         <div class="ci-right">
                             <form method="POST" action="{{ route('keranjang.hapus', $i['produk']) }}">
                                 @csrf @method('DELETE')
-                                <button class="ci-del" type="submit">🗑 Hapus</button>
+                                <button class="ci-del" type="submit"> Hapus</button>
                             </form>
                             <form method="POST" action="{{ route('keranjang.ubah', $i['produk']) }}" class="qty">
                                 @csrf @method('PATCH')

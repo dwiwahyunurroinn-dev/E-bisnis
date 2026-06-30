@@ -26,7 +26,12 @@ class ProdukController extends Controller
             ->when($request->query('q'), function ($q) use ($request) {
                 $q->where('nama', 'like', '%'.$request->query('q').'%');
             })
-            ->latest()
+            ->tap(fn ($q) => match ($request->query('sort')) {
+                'termurah' => $q->orderBy('harga'),
+                'termahal' => $q->orderByDesc('harga'),
+                'terlaris' => $q->orderByDesc('id'),   // proxy; ganti dgn kolom terjual nanti
+                default    => $q->latest(),
+            })
             ->paginate(12)
             ->withQueryString();
 

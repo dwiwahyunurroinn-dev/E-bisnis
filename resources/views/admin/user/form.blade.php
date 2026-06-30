@@ -43,7 +43,7 @@
         @endif
 
         <div style="display:flex;gap:10px;">
-            <button class="btn btn-primary">💾 Simpan</button>
+            <button class="btn btn-primary"> Simpan</button>
             <a href="{{ route('admin.user.index') }}" class="btn btn-outline">Batal</a>
         </div>
     </form>

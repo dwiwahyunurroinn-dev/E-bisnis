@@ -75,7 +75,7 @@
         </div>
 
         <div style="display:flex;gap:10px;margin-top:8px;">
-            <button class="btn btn-primary">💾 Simpan</button>
+            <button class="btn btn-primary"> Simpan</button>
             <a href="{{ route('admin.produk.index') }}" class="btn btn-outline">Batal</a>
         </div>
     </form>

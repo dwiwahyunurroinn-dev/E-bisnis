@@ -6,7 +6,7 @@
 <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px;">
     <div>
         <div class="panel" style="margin-top:0;">
-            <h2>🧾 {{ $pesanan->kode }} <span class="badge b-{{ $pesanan->status }}">{{ ucfirst($pesanan->status) }}</span></h2>
+            <h2> {{ $pesanan->kode }} <span class="badge b-{{ $pesanan->status }}">{{ ucfirst($pesanan->status) }}</span></h2>
             <table>
                 <thead><tr><th>Produk</th><th>Harga</th><th>Qty</th><th>Subtotal</th></tr></thead>
                 <tbody>
@@ -25,14 +25,14 @@
 
     <div>
         <div class="panel" style="margin-top:0;">
-            <h2>👤 Pelanggan</h2>
+            <h2> Pelanggan</h2>
             <p style="font-size:.9rem;"><b>{{ $pesanan->user?->name }}</b><br>{{ $pesanan->user?->email }}<br>{{ $pesanan->alamat->telepon }}</p>
-            <h2 style="margin-top:18px;">📍 Alamat</h2>
+            <h2 style="margin-top:18px;"> Alamat</h2>
             <p style="font-size:.9rem;">{{ $pesanan->alamat->penerima }}<br>{{ $pesanan->alamat->alamat_lengkap }}, {{ $pesanan->alamat->kota }} {{ $pesanan->alamat->kode_pos }}</p>
         </div>
 
         <div class="panel">
-            <h2>⚙️ Ubah Status</h2>
+            <h2> Ubah Status</h2>
             <form method="POST" action="{{ route('admin.pesanan.update', $pesanan) }}">
                 @csrf @method('PATCH')
                 <div class="field">

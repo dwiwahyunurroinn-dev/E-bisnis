@@ -9,11 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary:#3aa17e; --primary-dark:#2c8064; --primary-deep:#1f6b52; --primary-soft:#eaf6f1; --primary-mint:#f4faf7;
-            --accent:#e8a951; --danger:#e2574c; --ink:#213a32; --ink-soft:#6a7d75; --line:#e9efeb; --bg:#eef3f0; --white:#fff;
-            --radius:14px; --shadow-sm:0 2px 8px rgba(31,107,82,.06); --shadow-md:0 8px 24px rgba(31,107,82,.10); --ease:cubic-bezier(.22,.61,.36,1);
+            --primary:#00a868; --primary-dark:#048a55; --primary-deep:#03734a; --primary-soft:#e7f7ef; --primary-mint:#f4fbf8;
+            --accent:#ff8a3d; --star:#ffb400; --danger:#e2574c; --ink:#1f2a37; --ink-soft:#66727f; --line:#eceff3; --bg:#f5f6f8; --white:#fff;
+            --radius:14px; --shadow-sm:0 1px 3px rgba(16,24,40,.06); --shadow-md:0 6px 18px rgba(16,24,40,.08); --shadow-lg:0 16px 40px rgba(16,24,40,.14); --ease:cubic-bezier(.22,.61,.36,1);
             --sidebar:264px;
         }
+        .ico { display:inline-block; vertical-align:middle; flex-shrink:0; }
         * { box-sizing:border-box; margin:0; padding:0; }
         body { font-family:'Plus Jakarta Sans',system-ui,sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; }
         a { text-decoration:none; color:inherit; }
@@ -50,7 +51,8 @@
         .stat .val { font-size:1.6rem; font-weight:800; margin-top:8px; }
         .stat .val.sm { font-size:1.25rem; }
         .panel { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow-sm); padding:20px 22px; margin-top:18px; }
-        .panel h2 { font-size:1.05rem; font-weight:800; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+        .panel h2 { font-size:1.05rem; font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+        .panel h2 .btn, .panel h2 a.btn { margin-left:auto; }
         table { width:100%; border-collapse:collapse; font-size:.88rem; }
         th { text-align:left; color:var(--ink-soft); font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.4px; padding:10px 12px; border-bottom:2px solid var(--line); }
         td { padding:12px; border-bottom:1px solid var(--line); }
@@ -83,7 +85,25 @@
         .pagination a, .pagination span { min-width:34px; height:34px; padding:0 10px; display:flex; align-items:center; justify-content:center; border-radius:8px; border:1px solid var(--line); background:#fff; font-size:.85rem; font-weight:600; color:var(--ink-soft); }
         .pagination [aria-current] span { background:var(--primary); color:#fff; border-color:var(--primary); }
 
-        .toast { position:fixed; top:80px; left:50%; transform:translateX(-50%); z-index:100; padding:13px 22px; border-radius:12px; font-weight:600; font-size:.9rem; box-shadow:var(--shadow-md); animation:toastIn .35s var(--ease) both; }
+        /* Lonceng notifikasi (dipakai partials/notifikasi) */
+        .icon-btn { display:inline-flex; align-items:center; gap:7px; padding:8px 12px; border-radius:10px; color:var(--ink-soft); font-weight:600; font-size:.88rem; background:none; border:none; cursor:pointer; font-family:inherit; transition:background .15s,color .15s; }
+        .icon-btn:hover { background:var(--primary-soft); color:var(--primary-deep); }
+        .notif { position:relative; }
+        .notif-btn { position:relative; }
+        .notif-dot { position:absolute; top:0; right:2px; min-width:17px; height:17px; padding:0 4px; background:var(--danger); color:#fff; font-size:.64rem; font-weight:700; border-radius:9px; display:grid; place-items:center; }
+        .notif-panel { position:absolute; right:0; top:calc(100% + 8px); width:340px; max-width:90vw; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow-lg); opacity:0; visibility:hidden; transform:translateY(-6px); transition:all .18s var(--ease); z-index:60; overflow:hidden; }
+        .notif.open .notif-panel { opacity:1; visibility:visible; transform:translateY(0); }
+        .notif-panel .nhead { display:flex; justify-content:space-between; align-items:center; padding:13px 16px; border-bottom:1px solid var(--line); font-weight:700; font-size:.9rem; }
+        .notif-panel .nhead a { font-size:.78rem; color:var(--primary); font-weight:600; }
+        .notif-list { max-height:360px; overflow-y:auto; }
+        .notif-list a { display:flex; gap:10px; padding:12px 16px; border-bottom:1px solid var(--line); transition:background .15s; }
+        .notif-list a:hover { background:var(--primary-mint); }
+        .notif-list a.unread { background:#f0f9f4; }
+        .notif-list .ni-ico { width:34px; height:34px; flex-shrink:0; border-radius:9px; background:var(--primary-soft); color:var(--primary-deep); display:grid; place-items:center; }
+        .notif-list .ni-body b { font-size:.85rem; display:block; } .notif-list .ni-body span { font-size:.78rem; color:var(--ink-soft); } .notif-list .ni-body time { font-size:.72rem; color:var(--ink-soft); }
+        .notif-empty { padding:36px 16px; text-align:center; color:var(--ink-soft); font-size:.85rem; }
+
+        .toast { position:fixed; top:80px; left:50%; transform:translateX(-50%); z-index:100; padding:13px 22px; border-radius:12px; font-weight:600; font-size:.9rem; box-shadow:var(--shadow-md); animation:toastIn .35s var(--ease) both; display:inline-flex; align-items:center; gap:8px; }
         .toast.sukses { background:var(--primary); color:#fff; } .toast.error { background:var(--danger); color:#fff; }
         .hamb { display:none; }
         @media (max-width:980px) { .cards { grid-template-columns:repeat(2,1fr); } }
@@ -97,45 +117,46 @@
 <body>
     @php $r = request()->route()->getName(); @endphp
     <aside class="sidebar" id="sidebar">
-        <div class="brand"><span class="leaf">🌿</span> {{ config('toko.nama') }}</div>
+        <div class="brand"><x-logo :size="34" light /></div>
 
         <div class="nav-group">Utama</div>
-        <a href="{{ route('admin.dashboard') }}" class="nav-item {{ $r==='admin.dashboard'?'active':'' }}"><span class="ic">📊</span> Dashboard</a>
+        <a href="{{ route('admin.dashboard') }}" class="nav-item {{ $r==='admin.dashboard'?'active':'' }}"><span class="ic"><x-icon name="dashboard" :size="19"/></span> Dashboard</a>
         <a href="{{ route('admin.pesanan.index') }}" class="nav-item {{ str_starts_with($r,'admin.pesanan')?'active':'' }}">
-            <span class="ic">🧾</span> Pesanan
+            <span class="ic"><x-icon name="clipboard" :size="19"/></span> Pesanan
             @php $pending = \App\Models\Pesanan::where('status','pending')->count(); @endphp
             @if ($pending) <span class="pill">{{ $pending }}</span> @endif
         </a>
-        <a href="{{ route('admin.laporan.index') }}" class="nav-item {{ str_starts_with($r,'admin.laporan')?'active':'' }}"><span class="ic">📈</span> Laporan</a>
+        <a href="{{ route('admin.laporan.index') }}" class="nav-item {{ str_starts_with($r,'admin.laporan')?'active':'' }}"><span class="ic"><x-icon name="chart" :size="19"/></span> Laporan</a>
 
         <div class="nav-group">Katalog</div>
-        <a href="{{ route('admin.produk.index') }}" class="nav-item {{ str_starts_with($r,'admin.produk')?'active':'' }}"><span class="ic">📦</span> Produk</a>
-        <a href="{{ route('admin.stok.index') }}" class="nav-item {{ str_starts_with($r,'admin.stok')?'active':'' }}"><span class="ic">📥</span> Manajemen Stok</a>
-        <a href="{{ route('admin.promo.index') }}" class="nav-item {{ str_starts_with($r,'admin.promo')?'active':'' }}"><span class="ic">🎉</span> Promo / Slider</a>
+        <a href="{{ route('admin.produk.index') }}" class="nav-item {{ str_starts_with($r,'admin.produk')?'active':'' }}"><span class="ic"><x-icon name="package" :size="19"/></span> Produk</a>
+        <a href="{{ route('admin.stok.index') }}" class="nav-item {{ str_starts_with($r,'admin.stok')?'active':'' }}"><span class="ic"><x-icon name="box" :size="19"/></span> Manajemen Stok</a>
+        <a href="{{ route('admin.promo.index') }}" class="nav-item {{ str_starts_with($r,'admin.promo')?'active':'' }}"><span class="ic"><x-icon name="tag" :size="19"/></span> Promo / Slider</a>
 
         <div class="nav-group">Pengguna</div>
-        <a href="{{ route('admin.pelanggan.index') }}" class="nav-item {{ str_starts_with($r,'admin.pelanggan')?'active':'' }}"><span class="ic">👥</span> Pelanggan</a>
-        <a href="{{ route('admin.user.index') }}" class="nav-item {{ str_starts_with($r,'admin.user')?'active':'' }}"><span class="ic">🔑</span> Manajemen User</a>
-        <a href="{{ route('admin.log.index') }}" class="nav-item {{ str_starts_with($r,'admin.log')?'active':'' }}"><span class="ic">📜</span> Log Aktivitas</a>
+        <a href="{{ route('admin.pelanggan.index') }}" class="nav-item {{ str_starts_with($r,'admin.pelanggan')?'active':'' }}"><span class="ic"><x-icon name="users" :size="19"/></span> Pelanggan</a>
+        <a href="{{ route('admin.user.index') }}" class="nav-item {{ str_starts_with($r,'admin.user')?'active':'' }}"><span class="ic"><x-icon name="key" :size="19"/></span> Manajemen User</a>
+        <a href="{{ route('admin.log.index') }}" class="nav-item {{ str_starts_with($r,'admin.log')?'active':'' }}"><span class="ic"><x-icon name="clock" :size="19"/></span> Log Aktivitas</a>
 
         <div class="nav-group">Lainnya</div>
-        <a href="{{ route('produk.index') }}" class="nav-item"><span class="ic">🏬</span> Lihat Toko</a>
-        <form method="POST" action="{{ route('logout') }}">@csrf<button class="nav-item" type="submit" style="width:100%;border:none;background:none;cursor:pointer;font-family:inherit;"><span class="ic">↩</span> Keluar</button></form>
+        <a href="{{ route('produk.index') }}" class="nav-item"><span class="ic"><x-icon name="store" :size="19"/></span> Lihat Toko</a>
+        <form method="POST" action="{{ route('logout') }}">@csrf<button class="nav-item" type="submit" style="width:100%;border:none;background:none;cursor:pointer;font-family:inherit;"><span class="ic"><x-icon name="logout" :size="19"/></span> Keluar</button></form>
     </aside>
 
     <div class="main">
         <div class="topbar">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button class="hamb" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                <button class="hamb" onclick="document.getElementById('sidebar').classList.toggle('open')"><x-icon name="menu"/></button>
                 <h1>@yield('title', 'Dashboard')</h1>
             </div>
             <div class="right">
-                <a href="{{ route('produk.index') }}" class="view" target="_blank">↗ Buka Toko</a>
+                <a href="{{ route('produk.index') }}" class="view" target="_blank" style="display:inline-flex;align-items:center;gap:5px;"><x-icon name="store" :size="16"/> Buka Toko</a>
+                @include('partials.notifikasi')
                 <div class="avatar"><span class="circ">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</span> {{ auth()->user()->name }}</div>
             </div>
         </div>
 
-        @if (session('sukses'))<div class="toast sukses" data-toast>✅ {{ session('sukses') }}</div>@elseif (session('error'))<div class="toast error" data-toast>⚠️ {{ session('error') }}</div>@endif
+        @if (session('sukses'))<div class="toast sukses" data-toast><x-icon name="check-circle" :size="18"/> {{ session('sukses') }}</div>@elseif (session('error'))<div class="toast error" data-toast><x-icon name="alert" :size="18"/> {{ session('error') }}</div>@endif
 
         <div class="content">@yield('content')</div>
     </div>
@@ -146,6 +167,9 @@
             setTimeout(() => t.remove(), 3100);
         });
         function konfirmHapus(e) { if (!confirm('Yakin ingin menghapus data ini?')) e.preventDefault(); }
+        document.addEventListener('click', (e) => {
+            document.querySelectorAll('.notif.open').forEach(el => { if (!el.contains(e.target)) el.classList.remove('open'); });
+        });
     </script>
     @stack('scripts')
 </body>

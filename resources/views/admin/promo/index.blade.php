@@ -5,8 +5,8 @@
 @section('content')
 <div class="panel" style="margin-top:0;">
     <div class="toolbar">
-        <h2 style="margin:0;">🎉 Slide Promo Beranda</h2>
-        <a href="{{ route('admin.promo.create') }}" class="btn btn-primary">＋ Tambah Promo</a>
+        <h2 style="margin:0;"> Slide Promo Beranda</h2>
+        <a href="{{ route('admin.promo.create') }}" class="btn btn-primary">+ Tambah Promo</a>
     </div>
     <table>
         <thead><tr><th>Urutan</th><th>Preview</th><th>Judul</th><th>Label</th><th>Status</th><th>Aksi</th></tr></thead>
