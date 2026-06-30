@@ -37,33 +37,57 @@
                 <div class="card-panel reveal">
                     <h3>Alamat Pengiriman</h3>
                     <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:14px;">Akun: <b>{{ $user->name }}</b> ({{ $user->email }})</p>
-                    <div class="two">
-                        <div class="field">
-                            <label>Nama Penerima</label>
-                            <input type="text" name="nama" value="{{ old('nama', $alamatTerakhir->penerima ?? $user->name) }}" placeholder="Nama lengkap">
-                            @error('nama')<div class="err">{{ $message }}</div>@enderror
+
+                    @if ($alamatList->isNotEmpty())
+                        <div id="alamatTersimpan" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;">
+                            @foreach ($alamatList as $a)
+                                <label class="ship-opt {{ $loop->first ? 'sel' : '' }}">
+                                    <input type="radio" name="alamat_id" value="{{ $a->id }}" {{ $loop->first ? 'checked' : '' }} onchange="pilihTersimpan()">
+                                    <div class="so-main">
+                                        <b>{{ $a->penerima }} @if($a->utama)<span style="color:var(--primary);font-size:.72rem;">• Utama</span>@endif</b>
+                                        <span>{{ $a->telepon }} — {{ $a->alamat_lengkap }}, {{ $a->kota }} {{ $a->kode_pos }}</span>
+                                    </div>
+                                </label>
+                            @endforeach
+                            <label class="ship-opt">
+                                <input type="radio" name="alamat_id" value="" onchange="pilihBaru()">
+                                <div class="so-main"><b>+ Pakai alamat baru</b></div>
+                            </label>
+                        </div>
+                    @endif
+
+                    <div id="formAlamatBaru" style="{{ $alamatList->isNotEmpty() ? 'display:none;' : '' }}">
+                        <div class="two">
+                            <div class="field">
+                                <label>Nama Penerima</label>
+                                <input type="text" name="nama" value="{{ old('nama', $user->name) }}" placeholder="Nama lengkap">
+                                @error('nama')<div class="err">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="field">
+                                <label>No. Telepon</label>
+                                <input type="text" name="telepon" value="{{ old('telepon', $user->telepon) }}" placeholder="08xxxxxxxxxx">
+                                @error('telepon')<div class="err">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+                        <div class="two">
+                            <div class="field">
+                                <label>Kota / Kabupaten</label>
+                                <input type="text" name="kota" id="kota" value="{{ old('kota') }}" placeholder="mis. Jakarta">
+                                @error('kota')<div class="err">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="field">
+                                <label>Kode Pos (opsional)</label>
+                                <input type="text" name="kode_pos" value="{{ old('kode_pos') }}" placeholder="12345">
+                            </div>
                         </div>
                         <div class="field">
-                            <label>No. Telepon</label>
-                            <input type="text" name="telepon" value="{{ old('telepon', $alamatTerakhir->telepon ?? $user->telepon) }}" placeholder="08xxxxxxxxxx">
-                            @error('telepon')<div class="err">{{ $message }}</div>@enderror
+                            <label>Alamat Lengkap</label>
+                            <textarea name="alamat_lengkap" rows="3" placeholder="Jalan, nomor rumah, RT/RW, kelurahan, kecamatan">{{ old('alamat_lengkap') }}</textarea>
+                            @error('alamat_lengkap')<div class="err">{{ $message }}</div>@enderror
                         </div>
-                    </div>
-                    <div class="two">
-                        <div class="field">
-                            <label>Kota / Kabupaten</label>
-                            <input type="text" name="kota" id="kota" value="{{ old('kota', $alamatTerakhir->kota ?? '') }}" placeholder="mis. Jakarta">
-                            @error('kota')<div class="err">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="field">
-                            <label>Kode Pos (opsional)</label>
-                            <input type="text" name="kode_pos" value="{{ old('kode_pos', $alamatTerakhir->kode_pos ?? '') }}" placeholder="12345">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label>Alamat Lengkap</label>
-                        <textarea name="alamat_lengkap" rows="3" placeholder="Jalan, nomor rumah, RT/RW, kelurahan, kecamatan">{{ old('alamat_lengkap', $alamatTerakhir->alamat_lengkap ?? '') }}</textarea>
-                        @error('alamat_lengkap')<div class="err">{{ $message }}</div>@enderror
+                        <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--ink-soft);">
+                            <input type="checkbox" name="simpan_alamat" value="1" style="width:16px;height:16px;accent-color:var(--primary);"> Simpan alamat ini ke buku alamat
+                        </label>
                     </div>
                 </div>
 
@@ -132,6 +156,15 @@
 
 @section('scripts')
 <script>
+    function pilihTersimpan() {
+        document.getElementById('formAlamatBaru').style.display = 'none';
+        document.querySelectorAll('#alamatTersimpan .ship-opt').forEach(o => o.classList.toggle('sel', o.querySelector('input').checked));
+    }
+    function pilihBaru() {
+        document.getElementById('formAlamatBaru').style.display = '';
+        document.querySelectorAll('#alamatTersimpan .ship-opt').forEach(o => o.classList.toggle('sel', o.querySelector('input').checked));
+    }
+
     const BASE = {{ (int) max(0, $subtotal - $diskon) }};  // subtotal setelah diskon
     function fmt(n) { return 'Rp' + n.toLocaleString('id-ID'); }
     document.querySelectorAll('input[name="pengiriman"]').forEach(r => {

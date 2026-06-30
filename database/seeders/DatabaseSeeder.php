@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Alamat;
 use App\Models\Bundle;
 use App\Models\Produk;
 use App\Models\Promo;
@@ -23,10 +24,14 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Admin Eco Craft', 'password' => 'password', 'role' => 'admin', 'telepon' => '0812-0000-0001'],
         );
 
-        // Pelanggan contoh
-        User::updateOrCreate(
+        // Pelanggan contoh + alamat utama
+        $budiUser = User::updateOrCreate(
             ['email' => 'pelanggan@contoh.com'],
             ['name' => 'Budi Pelanggan', 'password' => 'password', 'role' => 'pelanggan', 'telepon' => '0812-0000-0002'],
+        );
+        Alamat::updateOrCreate(
+            ['user_id' => $budiUser->id, 'label' => 'Rumah'],
+            ['penerima' => 'Budi Pelanggan', 'telepon' => '0812-0000-0002', 'kota' => 'Yogyakarta', 'alamat_lengkap' => 'Jl. Kaliurang KM 5 No. 10', 'kode_pos' => '55281', 'utama' => true],
         );
 
         // Promo slider

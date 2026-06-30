@@ -25,10 +25,10 @@
 
     <div>
         <div class="panel" style="margin-top:0;">
-            <h2> Pelanggan</h2>
-            <p style="font-size:.9rem;"><b>{{ $pesanan->user?->name }}</b><br>{{ $pesanan->user?->email }}<br>{{ $pesanan->alamat->telepon }}</p>
-            <h2 style="margin-top:18px;"> Alamat</h2>
-            <p style="font-size:.9rem;">{{ $pesanan->alamat->penerima }}<br>{{ $pesanan->alamat->alamat_lengkap }}, {{ $pesanan->alamat->kota }} {{ $pesanan->alamat->kode_pos }}</p>
+            <h2>Pelanggan</h2>
+            <p style="font-size:.9rem;"><b>{{ $pesanan->user?->name }}</b><br>{{ $pesanan->user?->email }}<br>{{ $pesanan->telepon }}</p>
+            <h2 style="margin-top:18px;">Alamat</h2>
+            <p style="font-size:.9rem;">{{ $pesanan->penerima }}<br>{{ $pesanan->alamat_lengkap }}, {{ $pesanan->kota }} {{ $pesanan->kode_pos }}</p>
         </div>
 
         <div class="panel">

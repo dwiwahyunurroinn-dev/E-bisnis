@@ -9,4 +9,6 @@ return [
     // Nomor WhatsApp admin (format internasional tanpa + untuk wa.me).
     'whatsapp'      => env('TOKO_WHATSAPP', '6287734777846'),
     'whatsapp_text' => env('TOKO_WHATSAPP_TEXT', 'Halo Admin Eco Craft, saya butuh bantuan.'),
+    // Batas waktu pembayaran sebelum pesanan dibatalkan otomatis (jam).
+    'pesanan_expire_jam' => (int) env('TOKO_PESANAN_EXPIRE_JAM', 24),
 ];

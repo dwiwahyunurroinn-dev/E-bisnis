@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AkunController;
+use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DiskonController;
@@ -59,6 +60,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/akun/profil', [AkunController::class, 'updateProfil'])->name('akun.profil.update');
     Route::patch('/akun/password', [AkunController::class, 'updatePassword'])->name('akun.password');
     Route::get('/akun/pesanan', [AkunController::class, 'pesanan'])->name('akun.pesanan');
+
+    // Address book
+    Route::get('/akun/alamat', [AlamatController::class, 'index'])->name('akun.alamat');
+    Route::post('/akun/alamat', [AlamatController::class, 'store'])->name('akun.alamat.store');
+    Route::patch('/akun/alamat/{alamat}', [AlamatController::class, 'update'])->name('akun.alamat.update');
+    Route::delete('/akun/alamat/{alamat}', [AlamatController::class, 'destroy'])->name('akun.alamat.destroy');
+    Route::post('/akun/alamat/{alamat}/utama', [AlamatController::class, 'jadikanUtama'])->name('akun.alamat.utama');
 
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::get('/notifikasi/{notifikasi}', [NotifikasiController::class, 'buka'])->name('notifikasi.buka');

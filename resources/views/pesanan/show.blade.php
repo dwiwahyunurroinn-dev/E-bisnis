@@ -73,8 +73,8 @@
             <h3>Detail Pesanan</h3>
             <div class="line"><span class="k">Kode Pesanan</span><span><b>{{ $pesanan->kode }}</b></span></div>
             <div class="line"><span class="k">Tanggal</span><span>{{ $pesanan->created_at->format('d M Y, H:i') }}</span></div>
-            <div class="line"><span class="k">Penerima</span><span>{{ $pesanan->alamat->penerima }} ({{ $pesanan->alamat->telepon }})</span></div>
-            <div class="line"><span class="k">Alamat</span><span style="text-align:right;max-width:60%;">{{ $pesanan->alamat->alamat_lengkap }}, {{ $pesanan->alamat->kota }}</span></div>
+            <div class="line"><span class="k">Penerima</span><span>{{ $pesanan->penerima }} ({{ $pesanan->telepon }})</span></div>
+            <div class="line"><span class="k">Alamat</span><span style="text-align:right;max-width:60%;">{{ $pesanan->alamat_lengkap }}, {{ $pesanan->kota }} {{ $pesanan->kode_pos }}</span></div>
             <div class="line"><span class="k">Pengiriman</span><span>{{ strtoupper($pesanan->kurir) }} — {{ $pesanan->layanan }}</span></div>
         </div>
 

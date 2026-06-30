@@ -48,7 +48,7 @@ class CheckoutController extends Controller
             'beratGram'    => $this->cart->beratGram(),
             'opsiOngkir'   => $this->ongkir->opsi(null, $this->cart->beratGram()),
             'user'         => auth()->user(),
-            'alamatTerakhir' => Alamat::where('user_id', auth()->id())->latest()->first(),
+            'alamatList'   => Alamat::where('user_id', auth()->id())->orderByDesc('utama')->latest()->get(),
         ]);
     }
 
@@ -59,6 +59,20 @@ class CheckoutController extends Controller
             return redirect()->route('keranjang.index')->with('error', 'Keranjang kosong.');
         }
 
+        // Jika pilih alamat tersimpan, salin datanya ke input.
+        if ($request->filled('alamat_id')) {
+            $tersimpan = Alamat::where('user_id', auth()->id())->find($request->alamat_id);
+            if ($tersimpan) {
+                $request->merge([
+                    'nama'           => $tersimpan->penerima,
+                    'telepon'        => $tersimpan->telepon,
+                    'kota'           => $tersimpan->kota,
+                    'alamat_lengkap' => $tersimpan->alamat_lengkap,
+                    'kode_pos'       => $tersimpan->kode_pos,
+                ]);
+            }
+        }
+
         $data = $request->validate([
             'nama'           => ['required', 'string', 'max:120'],
             'telepon'        => ['required', 'string', 'max:25'],
@@ -66,6 +80,8 @@ class CheckoutController extends Controller
             'alamat_lengkap' => ['required', 'string'],
             'kode_pos'       => ['nullable', 'string', 'max:10'],
             'pengiriman'     => ['required', 'string'], // format: "kurir|layanan"
+            'alamat_id'      => ['nullable', 'integer'],
+            'simpan_alamat'  => ['nullable', 'boolean'],
         ]);
 
         $items = $this->cart->items();
@@ -90,24 +106,35 @@ class CheckoutController extends Controller
         $voucher  = $this->cart->voucher();
         $total    = max(0, $subtotal - $diskon) + $opsi['ongkir'];
 
-        $pesanan = DB::transaction(function () use ($data, $items, $subtotal, $diskon, $voucher, $opsi, $total, $kurir) {
+        $pesanan = DB::transaction(function () use ($data, $request, $items, $subtotal, $diskon, $voucher, $opsi, $total, $kurir) {
             // Checkout wajib login (standar marketplace) -> pakai akun aktif.
             $user = auth()->user();
 
-            $alamat = Alamat::create([
-                'user_id'        => $user->id,
-                'label'          => 'Pengiriman',
+            // Simpan ke address book bila diminta (alamat baru).
+            if (empty($data['alamat_id']) && $request->boolean('simpan_alamat')) {
+                $baru = Alamat::create([
+                    'user_id'        => $user->id,
+                    'label'          => 'Alamat',
+                    'penerima'       => $data['nama'],
+                    'telepon'        => $data['telepon'],
+                    'kota'           => $data['kota'],
+                    'alamat_lengkap' => $data['alamat_lengkap'],
+                    'kode_pos'       => $data['kode_pos'] ?? null,
+                    'utama'          => Alamat::where('user_id', $user->id)->count() === 0,
+                ]);
+                $data['alamat_id'] = $baru->id;
+            }
+
+            $pesanan = Pesanan::create([
+                'kode'         => $this->buatKode(),
+                'user_id'      => $user->id,
+                'alamat_id'    => $data['alamat_id'] ?? null, // referensi address book (opsional)
+                // Snapshot alamat pengiriman pada pesanan.
                 'penerima'       => $data['nama'],
                 'telepon'        => $data['telepon'],
                 'kota'           => $data['kota'],
                 'alamat_lengkap' => $data['alamat_lengkap'],
                 'kode_pos'       => $data['kode_pos'] ?? null,
-            ]);
-
-            $pesanan = Pesanan::create([
-                'kode'         => $this->buatKode(),
-                'user_id'      => $user->id,
-                'alamat_id'    => $alamat->id,
                 'kurir'        => $kurir,
                 'layanan'      => $opsi['layanan'],
                 'subtotal'     => $subtotal,
