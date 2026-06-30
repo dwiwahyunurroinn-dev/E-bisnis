@@ -41,7 +41,7 @@ class ProdukController extends Controller
      */
     public function show(Produk $produk): View
     {
-        $produk->load('kategori');
+        $produk->load('kategori', 'bahanBaku');
 
         $terkait = Produk::aktif()
             ->where('kategori_id', $produk->kategori_id)

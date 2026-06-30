@@ -47,4 +47,44 @@ class Produk extends Model
     {
         return $this->stok > 0;
     }
+
+    /* ------------------------------------------------------------------
+     | Helper tampilan untuk UI marketplace.
+     | Catatan: rating, jumlah terjual, dan diskon di bawah ini bersifat
+     | ILUSTRATIF (dihitung deterministik dari id) selama belum ada modul
+     | ulasan & promo sungguhan (Fase 3). Mudah diganti data asli nanti.
+     * ------------------------------------------------------------------ */
+
+    public function emoji(): string
+    {
+        return match ($this->kategori?->slug) {
+            'meja'       => '🪵',
+            'rak-lemari' => '🗄️',
+            'kursi'      => '🪑',
+            'dekorasi'   => '🕯️',
+            default      => '🛋️',
+        };
+    }
+
+    public function persenDiskon(): int
+    {
+        return [0 => 0, 1 => 12, 2 => 0, 3 => 18][$this->id % 4] ?? 0;
+    }
+
+    public function hargaCoret(): ?float
+    {
+        $persen = $this->persenDiskon();
+
+        return $persen > 0 ? round((float) $this->harga / (1 - $persen / 100), -2) : null;
+    }
+
+    public function ratingTampil(): string
+    {
+        return number_format(4.5 + ($this->id % 5) / 10, 1);
+    }
+
+    public function terjualTampil(): int
+    {
+        return 8 + ($this->id * 17) % 140;
+    }
 }

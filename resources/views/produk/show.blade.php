@@ -4,53 +4,128 @@
 
 @section('content')
 <div class="container">
+    <nav class="breadcrumb">
+        <a href="{{ route('produk.index') }}">Beranda</a> <span>›</span>
+        <a href="{{ route('produk.index', ['kategori' => $produk->kategori->slug]) }}">{{ $produk->kategori->nama }}</a>
+        <span>›</span> <span>{{ $produk->nama }}</span>
+    </nav>
+
     <div class="detail">
-        <div class="thumb-wrap">
-            <img loading="lazy" decoding="async"
-                 src="{{ asset('images/produk/'.$produk->gambar) }}"
-                 alt="{{ $produk->nama }}"
-                 onerror="this.src='data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22450%22&gt;&lt;rect width=%22100%25%22 height=%22100%25%22 fill=%22%23d8c3a5%22/&gt;&lt;/svg&gt;'">
+        {{-- Galeri --}}
+        <div class="detail-gallery">
+            <div class="detail-main-img">
+                @if ($produk->persenDiskon() > 0)
+                    <span class="badge-disc">-{{ $produk->persenDiskon() }}%</span>
+                @endif
+                <span class="ph-emoji">{{ $produk->emoji() }}</span>
+                <img loading="lazy" decoding="async"
+                     src="{{ asset('images/produk/'.$produk->gambar) }}"
+                     alt="{{ $produk->nama }}" onerror="this.remove()">
+            </div>
         </div>
-        <div>
-            <span class="kat">{{ $produk->kategori->nama }}</span>
+
+        {{-- Info --}}
+        <div class="detail-info">
+            <span class="pcat">{{ $produk->kategori->nama }}</span>
             <h1>{{ $produk->nama }}</h1>
-            <div class="harga">Rp{{ number_format($produk->harga, 0, ',', '.') }}</div>
-
-            <p class="meta">{{ $produk->deskripsi }}</p>
-            <p class="meta"><strong>Dimensi:</strong> {{ $produk->dimensi ?? '-' }}</p>
-            <p class="meta">
-                <strong>Ketersediaan:</strong>
-                <span class="stok {{ $produk->tersedia() ? 'ada' : 'habis' }}">
-                    {{ $produk->tersedia() ? $produk->stok.' unit siap kirim' : 'Stok habis' }}
+            <div class="rating-row">
+                <span class="stars">★ {{ $produk->ratingTampil() }}</span>
+                <span>·</span>
+                <span>{{ $produk->terjualTampil() }} terjual</span>
+                <span>·</span>
+                <span class="{{ $produk->tersedia() ? '' : '' }}">
+                    {{ $produk->tersedia() ? 'Stok '.$produk->stok.' unit' : 'Stok habis' }}
                 </span>
-            </p>
+            </div>
 
-            <button class="btn" {{ $produk->tersedia() ? '' : 'disabled' }}>
-                {{ $produk->tersedia() ? 'Tambah ke Keranjang' : 'Stok Habis' }}
+            <div class="price-box">
+                <span class="price-now">Rp{{ number_format($produk->harga, 0, ',', '.') }}</span>
+                @if ($produk->hargaCoret())
+                    <span class="price-was">Rp{{ number_format($produk->hargaCoret(), 0, ',', '.') }}</span>
+                    <span class="disc-chip">Hemat {{ $produk->persenDiskon() }}%</span>
+                @endif
+            </div>
+
+            <div class="spec"><span class="k">Kategori</span><span>{{ $produk->kategori->nama }}</span></div>
+            <div class="spec"><span class="k">Dimensi</span><span>{{ $produk->dimensi ?? '-' }}</span></div>
+            <div class="spec"><span class="k">Berat</span><span>{{ number_format($produk->berat_gram / 1000, 1, ',', '.') }} kg</span></div>
+
+            @if ($produk->bahanBaku->isNotEmpty())
+                <div class="spec" style="border:none; flex-direction:column; align-items:flex-start; gap:8px;">
+                    <span class="k">Bahan daur ulang</span>
+                    <div class="eco-chips">
+                        @foreach ($produk->bahanBaku as $bahan)
+                            <span class="eco-chip">♻️ {{ $bahan->nama }}</span>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <div class="desc">{{ $produk->deskripsi }}</div>
+        </div>
+
+        {{-- Buy box --}}
+        <div class="buybox">
+            <h3>Atur jumlah & beli</h3>
+            <div class="qty">
+                <button type="button" onclick="ubahQty(-1)" aria-label="Kurangi">−</button>
+                <input type="text" id="qty" value="1" readonly>
+                <button type="button" onclick="ubahQty(1)" aria-label="Tambah">+</button>
+            </div>
+            <div class="row">
+                <span>Subtotal</span>
+                <span class="total" id="subtotal">Rp{{ number_format($produk->harga, 0, ',', '.') }}</span>
+            </div>
+            <button class="btn btn-primary" {{ $produk->tersedia() ? '' : 'disabled' }}>
+                🛒 {{ $produk->tersedia() ? 'Tambah ke Keranjang' : 'Stok Habis' }}
+            </button>
+            <button class="btn btn-outline" {{ $produk->tersedia() ? '' : 'disabled' }}>
+                Beli Langsung
             </button>
         </div>
     </div>
 
+    {{-- Produk terkait --}}
     @if ($terkait->isNotEmpty())
-        <h2 style="color:var(--kayu-tua);margin-top:20px;">Produk Serupa</h2>
+        <div class="section-head"><h2>Produk Serupa</h2></div>
         <div class="grid">
             @foreach ($terkait as $p)
-                <a href="{{ route('produk.show', $p) }}" class="card">
-                    <div class="thumb-wrap">
-                        <img class="thumb" loading="lazy" decoding="async"
+                <a href="{{ route('produk.show', $p) }}" class="pcard">
+                    <div class="pthumb">
+                        @if ($p->persenDiskon() > 0)
+                            <span class="badge-disc">-{{ $p->persenDiskon() }}%</span>
+                        @endif
+                        <span class="ph-emoji">{{ $p->emoji() }}</span>
+                        <img loading="lazy" decoding="async"
                              src="{{ asset('images/produk/'.$p->gambar) }}"
-                             alt="{{ $p->nama }}"
-                             onerror="this.style.visibility='hidden'">
+                             alt="{{ $p->nama }}" onerror="this.remove()">
                     </div>
-                    <div class="card-body">
-                        <span class="nama">{{ $p->nama }}</span>
-                        <span class="harga">Rp{{ number_format($p->harga, 0, ',', '.') }}</span>
+                    <div class="pbody">
+                        <span class="pcat">{{ $p->kategori->nama }}</span>
+                        <span class="pname">{{ $p->nama }}</span>
+                        <span class="pprice">Rp{{ number_format($p->harga, 0, ',', '.') }}</span>
+                        <div class="pmeta">
+                            <span class="stars">★ {{ $p->ratingTampil() }}</span>
+                            <span>·</span><span>{{ $p->terjualTampil() }} terjual</span>
+                        </div>
                     </div>
                 </a>
             @endforeach
         </div>
     @endif
-
-    <a href="{{ route('produk.index') }}" class="back">&larr; Kembali ke katalog</a>
 </div>
+
+<script>
+    const HARGA = {{ (int) $produk->harga }};
+    const STOK  = {{ (int) $produk->stok }};
+    function ubahQty(delta) {
+        const el = document.getElementById('qty');
+        let v = parseInt(el.value, 10) + delta;
+        if (v < 1) v = 1;
+        if (STOK > 0 && v > STOK) v = STOK;
+        el.value = v;
+        document.getElementById('subtotal').textContent =
+            'Rp' + (HARGA * v).toLocaleString('id-ID');
+    }
+</script>
 @endsection
