@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Kategori;
+use App\Services\CartService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,9 +22,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Daftar kategori untuk navbar (dipakai di semua halaman via layout).
+        // Data global navbar: daftar kategori + jumlah item keranjang.
         View::composer('layouts.app', function ($view) {
             $view->with('navKategori', Kategori::orderBy('nama')->get());
+            $view->with('cartCount', app(CartService::class)->jumlahItem());
         });
     }
 }

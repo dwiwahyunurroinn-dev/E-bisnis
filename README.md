@@ -8,11 +8,24 @@ Dibangun bertahap menyelesaikan 6 masalah bisnis. Repo ini berisi **Fase 1 (pond
 | Fase | Fitur | Status |
 |------|-------|--------|
 | **1** | Database inventory (produk, bahan baku many-to-many, pesanan) + **trigger pengurang stok otomatis** saat pesanan `lunas` | ✅ Selesai |
-| **1** | Galeri produk earth-tone + lazy loading + filter kategori + pencarian | ✅ Selesai |
-| **2** | Single-page checkout + kalkulator ongkir (RajaOngkir) + payment gateway (Midtrans/Xendit) | ⏳ Berikutnya |
+| **1** | Galeri produk + UI marketplace modern (hijau soft, animasi) + lazy loading + filter + pencarian | ✅ Selesai |
+| **2** | Keranjang + single-page checkout + kalkulator ongkir + simulasi pembayaran (memicu trigger stok) | ✅ Selesai |
+| **2+** | Integrasi RajaOngkir & Midtrans/Xendit asli (ganti simulasi) + auth pelanggan | ⏳ Berikutnya |
 | **3** | Loyalty program: voucher generator + bundle offers | ⬜ Rencana |
 | **4** | Chatbot CRM (FAQ otomatis + handoff ke admin) | ⬜ Rencana |
 | **5** | Caching & optimasi query untuk traffic tinggi | ⬜ Rencana |
+
+### Alur belanja (Fase 2)
+
+`Galeri → Detail produk → Tambah ke Keranjang → Checkout (alamat + pilih kurir +
+ongkir otomatis) → Buat Pesanan → Bayar (simulasi) → status 'lunas' → stok berkurang`
+
+- **Keranjang**: berbasis session (`app/Services/CartService.php`), guest-friendly.
+- **Ongkir**: `app/Services/OngkirService.php` — simulasi berbasis berat, format mirip
+  RajaOngkir sehingga mudah diganti panggilan API asli.
+- **Checkout**: guest checkout (buat/cari user via email), satu halaman.
+- **Pembayaran**: tombol simulasi mengubah status → `lunas`. Di MySQL/MariaDB
+  pengurangan stok dilakukan trigger DB; di SQLite dev dilakukan di aplikasi.
 
 ## Struktur utama
 

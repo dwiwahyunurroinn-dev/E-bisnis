@@ -13,10 +13,10 @@
     </section>
 
     <div class="trust">
-        <div class="trust-item"><span class="t-ico">♻️</span><div><b>100% Daur Ulang</b><span>Bahan kayu reclaimed</span></div></div>
-        <div class="trust-item"><span class="t-ico">🚚</span><div><b>Pengiriman Aman</b><span>Dikemas ekstra kuat</span></div></div>
-        <div class="trust-item"><span class="t-ico">🛡️</span><div><b>Garansi Kualitas</b><span>Finishing premium</span></div></div>
-        <div class="trust-item"><span class="t-ico">💳</span><div><b>Pembayaran Mudah</b><span>Banyak metode bayar</span></div></div>
+        <div class="trust-item reveal"><span class="t-ico">♻️</span><div><b>100% Daur Ulang</b><span>Bahan kayu reclaimed</span></div></div>
+        <div class="trust-item reveal"><span class="t-ico">🚚</span><div><b>Pengiriman Aman</b><span>Dikemas ekstra kuat</span></div></div>
+        <div class="trust-item reveal"><span class="t-ico">🛡️</span><div><b>Garansi Kualitas</b><span>Finishing premium</span></div></div>
+        <div class="trust-item reveal"><span class="t-ico">💳</span><div><b>Pembayaran Mudah</b><span>Banyak metode bayar</span></div></div>
     </div>
 
     <div class="section-head" id="katalog">
@@ -40,7 +40,7 @@
     @else
         <div class="grid">
             @foreach ($produk as $p)
-                <a href="{{ route('produk.show', $p) }}" class="pcard">
+                <a href="{{ route('produk.show', $p) }}" class="pcard reveal">
                     <div class="pthumb">
                         @if ($p->persenDiskon() > 0)
                             <span class="badge-disc">-{{ $p->persenDiskon() }}%</span>
