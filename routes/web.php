@@ -30,11 +30,17 @@ Route::post('/bundle/{bundle}', [DiskonController::class, 'tambahBundle'])->name
 // Ulasan produk (wajib login)
 Route::post('/produk/{produk}/ulasan', [UlasanController::class, 'store'])->middleware('auth')->name('ulasan.store');
 
-// Checkout & pesanan
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/pesanan/{kode}', [PesananController::class, 'show'])->name('pesanan.show');
-Route::post('/pesanan/{kode}/bayar', [PesananController::class, 'bayar'])->name('pesanan.bayar');
+// Checkout & pesanan WAJIB LOGIN (standar marketplace).
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/pesanan/{kode}', [PesananController::class, 'show'])->name('pesanan.show');
+    Route::post('/pesanan/{kode}/bayar', [PesananController::class, 'bayar'])->name('pesanan.bayar');
+    Route::post('/pesanan/{kode}/batal', [PesananController::class, 'batal'])->name('pesanan.batal');
+    Route::post('/pesanan/{kode}/terima', [PesananController::class, 'terima'])->name('pesanan.terima');
+});
+
+// Webhook Midtrans (server-to-server, tanpa login/CSRF).
 Route::post('/midtrans/webhook', [PesananController::class, 'webhook'])->name('midtrans.webhook');
 
 // ---------- Auth ----------
@@ -48,8 +54,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 
 // ---------- Area pelanggan (login) ----------
 Route::middleware('auth')->group(function () {
-    Route::get('/akun', [AkunController::class, 'profil'])->name('akun.profil');
-    Route::patch('/akun', [AkunController::class, 'updateProfil'])->name('akun.profil.update');
+    Route::get('/akun', [AkunController::class, 'dashboard'])->name('akun.dashboard');
+    Route::get('/akun/profil', [AkunController::class, 'profil'])->name('akun.profil');
+    Route::patch('/akun/profil', [AkunController::class, 'updateProfil'])->name('akun.profil.update');
     Route::patch('/akun/password', [AkunController::class, 'updatePassword'])->name('akun.password');
     Route::get('/akun/pesanan', [AkunController::class, 'pesanan'])->name('akun.pesanan');
 

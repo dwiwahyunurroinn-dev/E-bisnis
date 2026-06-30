@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Kategori;
-use App\Models\Notifikasi;
 use App\Models\Pesanan;
 use App\Models\Produk;
 use App\Models\User;
@@ -29,21 +28,31 @@ class CheckoutTest extends TestCase
         ]);
     }
 
+    private function pelanggan(): User
+    {
+        return User::create(['name' => 'Budi', 'email' => 'budi@contoh.com', 'password' => 'password']);
+    }
+
     public function test_bisa_menambah_produk_ke_keranjang(): void
     {
         $p = $this->produk();
 
-        $this->post(route('keranjang.tambah', $p), ['qty' => 2])
-            ->assertRedirect();
+        $this->post(route('keranjang.tambah', $p), ['qty' => 2])->assertRedirect();
+        $this->get(route('keranjang.index'))->assertStatus(200)->assertSee('Meja Uji');
+    }
 
-        $this->get(route('keranjang.index'))
-            ->assertStatus(200)
-            ->assertSee('Meja Uji');
+    public function test_checkout_wajib_login(): void
+    {
+        $p = $this->produk();
+        $this->post(route('keranjang.tambah', $p), ['qty' => 1]);
+
+        $this->get(route('checkout.index'))->assertRedirect(route('login'));
     }
 
     public function test_checkout_kosong_dialihkan_ke_keranjang(): void
     {
-        $this->get(route('checkout.index'))
+        $this->actingAs($this->pelanggan())
+            ->get(route('checkout.index'))
             ->assertRedirect(route('keranjang.index'));
     }
 
@@ -52,9 +61,8 @@ class CheckoutTest extends TestCase
         $p = $this->produk(10);
         $this->post(route('keranjang.tambah', $p), ['qty' => 2]);
 
-        $this->post(route('checkout.store'), [
+        $this->actingAs($this->pelanggan())->post(route('checkout.store'), [
             'nama'           => 'Budi',
-            'email'          => 'budi@contoh.com',
             'telepon'        => '08123',
             'kota'           => 'Jakarta',
             'alamat_lengkap' => 'Jl. Mawar',
@@ -75,9 +83,8 @@ class CheckoutTest extends TestCase
         $p = $this->produk(10);
         $this->post(route('keranjang.tambah', $p), ['qty' => 1]);
 
-        $this->post(route('checkout.store'), [
+        $this->actingAs($this->pelanggan())->post(route('checkout.store'), [
             'nama'           => 'Budi',
-            'email'          => 'budi@contoh.com',
             'telepon'        => '08123',
             'kota'           => 'Jakarta',
             'alamat_lengkap' => 'Jl. Mawar',
@@ -90,11 +97,11 @@ class CheckoutTest extends TestCase
 
     public function test_pembayaran_mengurangi_stok(): void
     {
+        $user = $this->pelanggan();
         $p = $this->produk(10);
         $this->post(route('keranjang.tambah', $p), ['qty' => 3]);
-        $this->post(route('checkout.store'), [
+        $this->actingAs($user)->post(route('checkout.store'), [
             'nama'           => 'Ani',
-            'email'          => 'ani@contoh.com',
             'telepon'        => '08123',
             'kota'           => 'Bandung',
             'alamat_lengkap' => 'Jl. Melati',
@@ -102,10 +109,39 @@ class CheckoutTest extends TestCase
         ]);
 
         $pesanan = Pesanan::first();
-        $this->post(route('pesanan.bayar', $pesanan->kode))->assertRedirect();
+        $this->actingAs($user)->post(route('pesanan.bayar', $pesanan->kode))->assertRedirect();
 
         $this->assertSame('lunas', $pesanan->fresh()->status);
-        // Pada SQLite (test), pengurangan stok ditangani di aplikasi.
         $this->assertSame(7, $p->fresh()->stok);
+    }
+
+    public function test_pelanggan_bisa_membatalkan_pesanan_pending(): void
+    {
+        $user = $this->pelanggan();
+        $p = $this->produk(10);
+        $this->post(route('keranjang.tambah', $p), ['qty' => 1]);
+        $this->actingAs($user)->post(route('checkout.store'), [
+            'nama' => 'Budi', 'telepon' => '08', 'kota' => 'Jakarta',
+            'alamat_lengkap' => 'Jl', 'pengiriman' => 'jne|REG',
+        ]);
+
+        $pesanan = Pesanan::first();
+        $this->actingAs($user)->post(route('pesanan.batal', $pesanan->kode))->assertRedirect();
+        $this->assertSame('batal', $pesanan->fresh()->status);
+    }
+
+    public function test_pesanan_orang_lain_tidak_bisa_diakses(): void
+    {
+        $user = $this->pelanggan();
+        $p = $this->produk(10);
+        $this->post(route('keranjang.tambah', $p), ['qty' => 1]);
+        $this->actingAs($user)->post(route('checkout.store'), [
+            'nama' => 'Budi', 'telepon' => '08', 'kota' => 'Jakarta',
+            'alamat_lengkap' => 'Jl', 'pengiriman' => 'jne|REG',
+        ]);
+        $pesanan = Pesanan::first();
+
+        $lain = User::create(['name' => 'Lain', 'email' => 'lain@x.com', 'password' => 'password']);
+        $this->actingAs($lain)->get(route('pesanan.show', $pesanan->kode))->assertForbidden();
     }
 }

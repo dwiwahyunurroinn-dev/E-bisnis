@@ -31,4 +31,26 @@ class PesananService
             }
         });
     }
+
+    /**
+     * Batalkan pesanan. Bila sebelumnya sudah dibayar, kembalikan stok
+     * (trigger DB hanya MENGURANGI saat lunas, tidak mengembalikan).
+     */
+    public function batalkan(Pesanan $pesanan): void
+    {
+        if (in_array($pesanan->status, ['selesai', 'batal'], true)) {
+            return;
+        }
+
+        $sudahBayar = in_array($pesanan->status, ['lunas', 'diproses', 'dikirim'], true);
+
+        DB::transaction(function () use ($pesanan, $sudahBayar) {
+            if ($sudahBayar) {
+                foreach ($pesanan->detail()->get() as $d) {
+                    Produk::whereKey($d->produk_id)->increment('stok', $d->jumlah);
+                }
+            }
+            $pesanan->update(['status' => 'batal']);
+        });
+    }
 }

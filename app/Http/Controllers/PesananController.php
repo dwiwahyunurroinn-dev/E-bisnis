@@ -19,7 +19,7 @@ class PesananController extends Controller
 
     public function show(string $kode): View
     {
-        $pesanan = Pesanan::with('detail', 'alamat')->where('kode', $kode)->firstOrFail();
+        $pesanan = $this->milikSaya($kode, ['detail', 'alamat']);
 
         return view('pesanan.show', [
             'pesanan'        => $pesanan,
@@ -33,7 +33,7 @@ class PesananController extends Controller
      */
     public function bayar(string $kode): RedirectResponse
     {
-        $pesanan = Pesanan::where('kode', $kode)->firstOrFail();
+        $pesanan = $this->milikSaya($kode);
 
         // Jika Midtrans aktif, arahkan ke halaman pembayaran Snap.
         if ($this->payment->aktif() && $pesanan->status === 'pending') {
@@ -46,6 +46,47 @@ class PesananController extends Controller
 
         return redirect()->route('pesanan.show', $pesanan->kode)
             ->with('sukses', 'Pembayaran berhasil! Pesanan Anda sedang diproses.');
+    }
+
+    /** Pelanggan membatalkan pesanan yang masih menunggu pembayaran. */
+    public function batal(string $kode): RedirectResponse
+    {
+        $pesanan = $this->milikSaya($kode);
+
+        if ($pesanan->status !== 'pending') {
+            return back()->with('error', 'Pesanan ini tidak dapat dibatalkan.');
+        }
+
+        $this->pesananService->batalkan($pesanan);
+
+        return back()->with('sukses', 'Pesanan dibatalkan.');
+    }
+
+    /** Pelanggan konfirmasi barang diterima (dikirim -> selesai). */
+    public function terima(string $kode): RedirectResponse
+    {
+        $pesanan = $this->milikSaya($kode);
+
+        if ($pesanan->status !== 'dikirim') {
+            return back()->with('error', 'Pesanan belum dikirim.');
+        }
+
+        $pesanan->update(['status' => 'selesai']);
+
+        return back()->with('sukses', 'Terima kasih! Pesanan ditandai selesai.');
+    }
+
+    /** Ambil pesanan milik user login (atau admin), atau 403/404. */
+    private function milikSaya(string $kode, array $relasi = []): Pesanan
+    {
+        $pesanan = Pesanan::with($relasi)->where('kode', $kode)->firstOrFail();
+
+        abort_unless(
+            $pesanan->user_id === auth()->id() || auth()->user()?->isAdmin(),
+            403,
+        );
+
+        return $pesanan;
     }
 
     /**

@@ -46,4 +46,32 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notifikasi::class);
     }
+
+    /* ---------------- Loyalitas (standar marketplace) ---------------- */
+
+    /** Total belanja dari pesanan yang sudah dibayar. */
+    public function totalBelanja(): float
+    {
+        return (float) $this->pesanan()
+            ->whereIn('status', ['lunas', 'diproses', 'dikirim', 'selesai'])
+            ->sum('total');
+    }
+
+    /** Poin loyalitas: 1 poin per Rp10.000 belanja. */
+    public function poin(): int
+    {
+        return (int) floor($this->totalBelanja() / 10000);
+    }
+
+    /** Tier membership berdasarkan total belanja. */
+    public function tier(): string
+    {
+        $t = $this->totalBelanja();
+
+        return match (true) {
+            $t >= 10000000 => 'Gold',
+            $t >= 3000000  => 'Silver',
+            default        => 'Bronze',
+        };
+    }
 }

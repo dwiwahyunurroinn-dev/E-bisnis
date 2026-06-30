@@ -31,6 +31,14 @@ class CheckoutController extends Controller
                 ->with('error', 'Keranjang masih kosong.');
         }
 
+        // Validasi stok sebelum menampilkan checkout.
+        foreach ($this->cart->items() as $i) {
+            if ($i['qty'] > $i['produk']->stok) {
+                return redirect()->route('keranjang.index')
+                    ->with('error', 'Stok "'.$i['produk']->nama.'" tidak mencukupi (sisa '.$i['produk']->stok.').');
+            }
+        }
+
         return view('checkout.index', [
             'items'        => $this->cart->items(),
             'subtotal'     => $this->cart->subtotal(),
@@ -39,6 +47,8 @@ class CheckoutController extends Controller
             'namaBundle'   => $this->cart->namaBundle(),
             'beratGram'    => $this->cart->beratGram(),
             'opsiOngkir'   => $this->ongkir->opsi(null, $this->cart->beratGram()),
+            'user'         => auth()->user(),
+            'alamatTerakhir' => Alamat::where('user_id', auth()->id())->latest()->first(),
         ]);
     }
 
@@ -51,13 +61,22 @@ class CheckoutController extends Controller
 
         $data = $request->validate([
             'nama'           => ['required', 'string', 'max:120'],
-            'email'          => ['required', 'email', 'max:150'],
             'telepon'        => ['required', 'string', 'max:25'],
             'kota'           => ['required', 'string', 'max:80'],
             'alamat_lengkap' => ['required', 'string'],
             'kode_pos'       => ['nullable', 'string', 'max:10'],
             'pengiriman'     => ['required', 'string'], // format: "kurir|layanan"
         ]);
+
+        $items = $this->cart->items();
+
+        // Validasi stok terkini (cegah overselling).
+        foreach ($items as $i) {
+            if ($i['qty'] > $i['produk']->stok) {
+                return redirect()->route('keranjang.index')
+                    ->with('error', 'Stok "'.$i['produk']->nama.'" tidak mencukupi.');
+            }
+        }
 
         [$kurir, $layanan] = array_pad(explode('|', $data['pengiriman'], 2), 2, '');
         $opsi = $this->ongkir->cari($data['kota'], $this->cart->beratGram(), $kurir, $layanan);
@@ -66,18 +85,14 @@ class CheckoutController extends Controller
             return back()->withInput()->with('error', 'Opsi pengiriman tidak valid.');
         }
 
-        $items    = $this->cart->items();
         $subtotal = $this->cart->subtotal();
         $diskon   = $this->cart->diskonTotal();
         $voucher  = $this->cart->voucher();
         $total    = max(0, $subtotal - $diskon) + $opsi['ongkir'];
 
         $pesanan = DB::transaction(function () use ($data, $items, $subtotal, $diskon, $voucher, $opsi, $total, $kurir) {
-            // Jika sudah login pakai akun tsb, jika tidak (guest) cari/buat via email.
-            $user = auth()->user() ?? User::firstOrCreate(
-                ['email' => $data['email']],
-                ['name' => $data['nama'], 'password' => bcrypt(Str::random(16))],
-            );
+            // Checkout wajib login (standar marketplace) -> pakai akun aktif.
+            $user = auth()->user();
 
             $alamat = Alamat::create([
                 'user_id'        => $user->id,

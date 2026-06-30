@@ -5,8 +5,8 @@
 @push('styles')
 <style>
     .akun-wrap { max-width: 820px; margin: 28px auto 60px; }
-    .akun-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
-    .akun-tabs a { padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: .9rem; background: #fff; border: 1px solid var(--line); }
+    .akun-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .akun-tabs a { display: inline-flex; align-items: center; gap: 7px; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: .88rem; background: #fff; border: 1px solid var(--line); }
     .akun-tabs a.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .ord { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
     .ord:last-child { border-bottom: none; }
@@ -21,11 +21,7 @@
 
 @section('content')
 <div class="container akun-wrap">
-    <div class="akun-tabs">
-        <a href="{{ route('akun.profil') }}">Profil</a>
-        <a href="{{ route('akun.pesanan') }}" class="active">Pesanan Saya</a>
-        <a href="{{ route('notifikasi.index') }}">Notifikasi</a>
-    </div>
+    @include('partials.akun-tabs')
 
     <div class="card-panel">
         <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:6px;">Riwayat Pesanan</h3>

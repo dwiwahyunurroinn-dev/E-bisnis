@@ -30,11 +30,12 @@ class LoyalitasTest extends TestCase
         $p = $this->produk(600000);
         Voucher::create(['kode' => 'HEMAT10', 'tipe' => 'persen', 'nilai' => 10, 'min_belanja' => 0, 'aktif' => true]);
 
+        $user = User::create(['name' => 'A', 'email' => 'a@a.com', 'password' => 'password']);
         $this->post(route('keranjang.tambah', $p), ['qty' => 1]);
         $this->post(route('voucher.pasang'), ['kode' => 'HEMAT10'])->assertRedirect();
 
-        $this->post(route('checkout.store'), [
-            'nama' => 'A', 'email' => 'a@a.com', 'telepon' => '08', 'kota' => 'Jakarta',
+        $this->actingAs($user)->post(route('checkout.store'), [
+            'nama' => 'A', 'telepon' => '08', 'kota' => 'Jakarta',
             'alamat_lengkap' => 'Jl', 'pengiriman' => 'jne|REG',
         ]);
 

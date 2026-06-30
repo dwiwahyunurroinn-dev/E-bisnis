@@ -35,38 +35,34 @@
             <div class="stack">
                 {{-- Alamat --}}
                 <div class="card-panel reveal">
-                    <h3> Alamat Pengiriman</h3>
+                    <h3>Alamat Pengiriman</h3>
+                    <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:14px;">Akun: <b>{{ $user->name }}</b> ({{ $user->email }})</p>
                     <div class="two">
                         <div class="field">
                             <label>Nama Penerima</label>
-                            <input type="text" name="nama" value="{{ old('nama') }}" placeholder="Nama lengkap">
+                            <input type="text" name="nama" value="{{ old('nama', $alamatTerakhir->penerima ?? $user->name) }}" placeholder="Nama lengkap">
                             @error('nama')<div class="err">{{ $message }}</div>@enderror
                         </div>
                         <div class="field">
                             <label>No. Telepon</label>
-                            <input type="text" name="telepon" value="{{ old('telepon') }}" placeholder="08xxxxxxxxxx">
+                            <input type="text" name="telepon" value="{{ old('telepon', $alamatTerakhir->telepon ?? $user->telepon) }}" placeholder="08xxxxxxxxxx">
                             @error('telepon')<div class="err">{{ $message }}</div>@enderror
                         </div>
-                    </div>
-                    <div class="field">
-                        <label>Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}" placeholder="email@contoh.com">
-                        @error('email')<div class="err">{{ $message }}</div>@enderror
                     </div>
                     <div class="two">
                         <div class="field">
                             <label>Kota / Kabupaten</label>
-                            <input type="text" name="kota" id="kota" value="{{ old('kota') }}" placeholder="mis. Jakarta">
+                            <input type="text" name="kota" id="kota" value="{{ old('kota', $alamatTerakhir->kota ?? '') }}" placeholder="mis. Jakarta">
                             @error('kota')<div class="err">{{ $message }}</div>@enderror
                         </div>
                         <div class="field">
                             <label>Kode Pos (opsional)</label>
-                            <input type="text" name="kode_pos" value="{{ old('kode_pos') }}" placeholder="12345">
+                            <input type="text" name="kode_pos" value="{{ old('kode_pos', $alamatTerakhir->kode_pos ?? '') }}" placeholder="12345">
                         </div>
                     </div>
                     <div class="field">
                         <label>Alamat Lengkap</label>
-                        <textarea name="alamat_lengkap" rows="3" placeholder="Jalan, nomor rumah, RT/RW, kelurahan, kecamatan">{{ old('alamat_lengkap') }}</textarea>
+                        <textarea name="alamat_lengkap" rows="3" placeholder="Jalan, nomor rumah, RT/RW, kelurahan, kecamatan">{{ old('alamat_lengkap', $alamatTerakhir->alamat_lengkap ?? '') }}</textarea>
                         @error('alamat_lengkap')<div class="err">{{ $message }}</div>@enderror
                     </div>
                 </div>

@@ -5,8 +5,8 @@
 @push('styles')
 <style>
     .akun-wrap { max-width: 720px; margin: 28px auto 60px; }
-    .akun-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
-    .akun-tabs a { padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: .9rem; background: #fff; border: 1px solid var(--line); }
+    .akun-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .akun-tabs a { display: inline-flex; align-items: center; gap: 7px; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: .88rem; background: #fff; border: 1px solid var(--line); }
     .akun-tabs a.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .card-panel + .card-panel { margin-top: 18px; }
 </style>
@@ -14,11 +14,7 @@
 
 @section('content')
 <div class="container akun-wrap">
-    <div class="akun-tabs">
-        <a href="{{ route('akun.profil') }}" class="active">Profil</a>
-        <a href="{{ route('akun.pesanan') }}">Pesanan Saya</a>
-        <a href="{{ route('notifikasi.index') }}">Notifikasi</a>
-    </div>
+    @include('partials.akun-tabs')
 
     <div class="card-panel">
         <h3 style="display:flex;align-items:center;gap:8px;font-size:1.05rem;font-weight:800;margin-bottom:16px;"><x-icon name="user"/> Data Profil</h3>

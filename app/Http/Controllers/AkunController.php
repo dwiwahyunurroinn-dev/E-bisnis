@@ -10,6 +10,20 @@ use Illuminate\View\View;
 
 class AkunController extends Controller
 {
+    public function dashboard(): View
+    {
+        $user = auth()->user();
+
+        return view('akun.dashboard', [
+            'user'          => $user,
+            'totalPesanan'  => $user->pesanan()->count(),
+            'perluBayar'    => $user->pesanan()->where('status', 'pending')->count(),
+            'sedangProses'  => $user->pesanan()->whereIn('status', ['lunas', 'diproses', 'dikirim'])->count(),
+            'selesai'       => $user->pesanan()->where('status', 'selesai')->count(),
+            'pesananTerbaru'=> $user->pesanan()->with('detail')->latest()->take(5)->get(),
+        ]);
+    }
+
     public function profil(): View
     {
         return view('akun.profil', ['user' => auth()->user()]);
