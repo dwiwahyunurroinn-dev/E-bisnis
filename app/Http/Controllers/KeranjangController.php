@@ -15,8 +15,11 @@ class KeranjangController extends Controller
     public function index(): View
     {
         return view('keranjang.index', [
-            'items'    => $this->cart->items(),
-            'subtotal' => $this->cart->subtotal(),
+            'items'      => $this->cart->items(),
+            'subtotal'   => $this->cart->subtotal(),
+            'diskon'     => $this->cart->diskonTotal(),
+            'total'      => $this->cart->total(),
+            'namaBundle' => $this->cart->namaBundle(),
         ]);
     }
 

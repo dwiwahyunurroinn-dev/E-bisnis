@@ -17,7 +17,7 @@
         <tbody>
             @forelse ($produk as $p)
                 <tr>
-                    <td><div class="thumb-sm">@if ($p->gambarUrl())<img src="{{ $p->gambarUrl() }}" alt="">@else <span>{{ $p->emoji() }}</span>@endif</div></td>
+                    <td><div class="thumb-sm">@if ($p->gambarUrl())<img src="{{ $p->gambarUrl() }}" alt="">@else <span style="color:var(--primary)"><x-icon name="sofa" :size="22"/></span>@endif</div></td>
                     <td style="font-weight:600;">{{ $p->nama }}</td>
                     <td>{{ $p->kategori->nama }}</td>
                     <td>Rp{{ number_format($p->harga, 0, ',', '.') }}</td>

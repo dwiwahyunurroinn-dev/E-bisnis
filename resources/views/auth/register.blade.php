@@ -16,7 +16,8 @@
 @section('content')
 <div class="container auth-wrap">
     <div class="auth-card">
-        <h1> Buat Akun Baru</h1>
+        <div style="text-align:center;margin-bottom:6px;"><x-mascot :size="84" /></div>
+        <h1>Buat Akun Baru</h1>
         <p class="sub">Bergabung dengan {{ config('toko.nama') }}</p>
 
         <form method="POST" action="{{ route('register') }}">

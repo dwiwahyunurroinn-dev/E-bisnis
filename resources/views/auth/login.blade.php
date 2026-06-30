@@ -19,7 +19,8 @@
 @section('content')
 <div class="container auth-wrap">
     <div class="auth-card">
-        <h1> Selamat Datang</h1>
+        <div style="text-align:center;margin-bottom:6px;"><x-mascot :size="90" /></div>
+        <h1>Selamat Datang</h1>
         <p class="sub">Masuk ke akun {{ config('toko.nama') }} Anda</p>
 
         <div class="hint">Demo admin: <b>admin@ecocraft.id</b> / <b>password</b></div>

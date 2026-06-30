@@ -12,11 +12,12 @@ class Pesanan extends Model
 
     protected $fillable = [
         'kode', 'user_id', 'alamat_id', 'kurir', 'layanan',
-        'subtotal', 'ongkir', 'total', 'metode_bayar', 'status',
+        'subtotal', 'diskon', 'kode_voucher', 'ongkir', 'total', 'metode_bayar', 'status',
     ];
 
     protected $casts = [
         'subtotal' => 'decimal:2',
+        'diskon'   => 'decimal:2',
         'ongkir'   => 'decimal:2',
         'total'    => 'decimal:2',
     ];

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Produk extends Model
 {
@@ -33,6 +35,11 @@ class Produk extends Model
             ->withPivot('jumlah');
     }
 
+    public function ulasan(): HasMany
+    {
+        return $this->hasMany(Ulasan::class);
+    }
+
     public function scopeAktif(Builder $query): Builder
     {
         return $query->where('status', 'aktif');
@@ -48,13 +55,6 @@ class Produk extends Model
         return $this->stok > 0;
     }
 
-    /* ------------------------------------------------------------------
-     | Helper tampilan untuk UI marketplace.
-     | Catatan: rating, jumlah terjual, dan diskon di bawah ini bersifat
-     | ILUSTRATIF (dihitung deterministik dari id) selama belum ada modul
-     | ulasan & promo sungguhan (Fase 3). Mudah diganti data asli nanti.
-     * ------------------------------------------------------------------ */
-
     public function gambarUrl(): ?string
     {
         if (! $this->gambar) {
@@ -67,16 +67,7 @@ class Produk extends Model
             : asset('images/produk/'.$this->gambar);
     }
 
-    public function emoji(): string
-    {
-        return match ($this->kategori?->slug) {
-            'meja'       => '🪵',
-            'rak-lemari' => '🗄️',
-            'kursi'      => '🪑',
-            'dekorasi'   => '🕯️',
-            default      => '🛋️',
-        };
-    }
+    /* ---------------- Diskon per-produk (ilustratif, deterministik) -------- */
 
     public function persenDiskon(): int
     {
@@ -90,13 +81,49 @@ class Produk extends Model
         return $persen > 0 ? round((float) $this->harga / (1 - $persen / 100), -2) : null;
     }
 
-    public function ratingTampil(): string
+    /* ---------------- Rating & terjual (DATA ASLI dari ulasan/pesanan) ----- */
+
+    public function ratingRata(): float
     {
-        return number_format(4.5 + ($this->id % 5) / 10, 1);
+        // Pakai agregat yang sudah di-eager-load bila tersedia (hindari N+1).
+        $avg = $this->ulasan_avg_rating ?? $this->ulasan()->avg('rating');
+
+        return round((float) $avg, 1);
     }
 
+    public function jumlahUlasan(): int
+    {
+        return (int) ($this->ulasan_count ?? $this->ulasan()->count());
+    }
+
+    /** Teks rating untuk kartu: angka bila ada ulasan, "Baru" bila belum. */
+    public function ratingTampil(): string
+    {
+        return $this->jumlahUlasan() > 0 ? number_format($this->ratingRata(), 1) : 'Baru';
+    }
+
+    /** Jumlah terjual nyata (dari pesanan yang sudah dibayar). */
     public function terjualTampil(): int
     {
-        return 8 + ($this->id * 17) % 140;
+        return (int) DB::table('detail_pesanan')
+            ->join('pesanan', 'pesanan.id', '=', 'detail_pesanan.pesanan_id')
+            ->where('detail_pesanan.produk_id', $this->id)
+            ->whereIn('pesanan.status', ['lunas', 'diproses', 'dikirim', 'selesai'])
+            ->sum('detail_pesanan.jumlah');
+    }
+
+    /** Apakah user pernah membeli (lunas) produk ini -> boleh memberi ulasan. */
+    public function sudahDibeliOleh(?int $userId): bool
+    {
+        if (! $userId) {
+            return false;
+        }
+
+        return DB::table('detail_pesanan')
+            ->join('pesanan', 'pesanan.id', '=', 'detail_pesanan.pesanan_id')
+            ->where('detail_pesanan.produk_id', $this->id)
+            ->where('pesanan.user_id', $userId)
+            ->whereIn('pesanan.status', ['lunas', 'diproses', 'dikirim', 'selesai'])
+            ->exists();
     }
 }

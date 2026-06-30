@@ -132,6 +132,8 @@
         <a href="{{ route('admin.produk.index') }}" class="nav-item {{ str_starts_with($r,'admin.produk')?'active':'' }}"><span class="ic"><x-icon name="package" :size="19"/></span> Produk</a>
         <a href="{{ route('admin.stok.index') }}" class="nav-item {{ str_starts_with($r,'admin.stok')?'active':'' }}"><span class="ic"><x-icon name="box" :size="19"/></span> Manajemen Stok</a>
         <a href="{{ route('admin.promo.index') }}" class="nav-item {{ str_starts_with($r,'admin.promo')?'active':'' }}"><span class="ic"><x-icon name="tag" :size="19"/></span> Promo / Slider</a>
+        <a href="{{ route('admin.voucher.index') }}" class="nav-item {{ str_starts_with($r,'admin.voucher')?'active':'' }}"><span class="ic"><x-icon name="tag" :size="19"/></span> Voucher</a>
+        <a href="{{ route('admin.bundle.index') }}" class="nav-item {{ str_starts_with($r,'admin.bundle')?'active':'' }}"><span class="ic"><x-icon name="package" :size="19"/></span> Bundle / Paket</a>
 
         <div class="nav-group">Pengguna</div>
         <a href="{{ route('admin.pelanggan.index') }}" class="nav-item {{ str_starts_with($r,'admin.pelanggan')?'active':'' }}"><span class="ic"><x-icon name="users" :size="19"/></span> Pelanggan</a>

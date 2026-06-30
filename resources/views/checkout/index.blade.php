@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout — KayuReclaimed')
+@section('title', 'Checkout — '.config('toko.nama'))
 
 @push('styles')
 <style>
@@ -95,23 +95,48 @@
                 <h3> Ringkasan Pesanan</h3>
                 @foreach ($items as $i)
                     <div class="mini-item">
-                        <span>{{ $i['produk']->emoji() }} {{ $i['produk']->nama }} <b>×{{ $i['qty'] }}</b></span>
+                        <span>{{ $i['produk']->nama }} <b>×{{ $i['qty'] }}</b></span>
                         <span>Rp{{ number_format($i['subtotal'], 0, ',', '.') }}</span>
                     </div>
                 @endforeach
                 <div class="row" style="margin-top:14px;"><span>Subtotal</span><span>Rp{{ number_format($subtotal, 0, ',', '.') }}</span></div>
+                @if ($namaBundle)
+                    <div class="row" style="color:var(--accent);"><span>Paket: {{ $namaBundle }}</span><span></span></div>
+                @endif
+                @if ($diskon > 0)
+                    <div class="row" style="color:var(--primary-deep);font-weight:700;"><span>Diskon{{ $voucher ? ' ('.$voucher->kode.')' : '' }}</span><span>− Rp{{ number_format($diskon, 0, ',', '.') }}</span></div>
+                @endif
                 <div class="row"><span>Ongkir</span><span id="ongkirLabel">Rp{{ number_format($opsiOngkir[0]['ongkir'], 0, ',', '.') }}</span></div>
-                <div class="grand"><span>Total</span><b id="totalLabel">Rp{{ number_format($subtotal + $opsiOngkir[0]['ongkir'], 0, ',', '.') }}</b></div>
-                <button type="submit" class="btn btn-primary btn-block">Buat Pesanan & Bayar →</button>
+                <div class="grand"><span>Total</span><b id="totalLabel">Rp{{ number_format(max(0,$subtotal-$diskon) + $opsiOngkir[0]['ongkir'], 0, ',', '.') }}</b></div>
+                <button type="submit" class="btn btn-primary btn-block">Buat Pesanan & Bayar <x-icon name="arrow-right" :size="16"/></button>
+    </div>
+    {{-- Voucher (form terpisah agar tidak submit pesanan) --}}
+    <div class="card-panel" style="margin-top:14px;">
+        <h3 style="font-size:.95rem;font-weight:800;margin-bottom:10px;">Punya Voucher?</h3>
+        @if ($voucher)
+            <div style="display:flex;justify-content:space-between;align-items:center;background:var(--primary-soft);padding:10px 14px;border-radius:10px;">
+                <span style="font-weight:700;color:var(--primary-deep);">{{ $voucher->kode }} diterapkan</span>
+                <button form="lepasVoucher" class="btn btn-outline" style="padding:6px 12px;">Lepas</button>
+            </div>
+        @else
+            <div style="display:flex;gap:8px;">
+                <input form="pasangVoucher" type="text" name="kode" placeholder="Masukkan kode" style="flex:1;padding:10px 13px;border:1.6px solid var(--line);border-radius:10px;font-family:inherit;text-transform:uppercase;">
+                <button form="pasangVoucher" class="btn btn-primary">Pakai</button>
+            </div>
+        @endif
             </div>
         </div>
     </form>
+
+    {{-- Form voucher (terpisah dari form checkout) --}}
+    <form id="pasangVoucher" method="POST" action="{{ route('voucher.pasang') }}">@csrf</form>
+    <form id="lepasVoucher" method="POST" action="{{ route('voucher.lepas') }}">@csrf @method('DELETE')</form>
 </div>
 @endsection
 
 @section('scripts')
 <script>
-    const SUBTOTAL = {{ (int) $subtotal }};
+    const BASE = {{ (int) max(0, $subtotal - $diskon) }};  // subtotal setelah diskon
     function fmt(n) { return 'Rp' + n.toLocaleString('id-ID'); }
     document.querySelectorAll('input[name="pengiriman"]').forEach(r => {
         r.addEventListener('change', function () {
@@ -119,7 +144,7 @@
             this.closest('.ship-opt').classList.add('sel');
             const ongkir = parseInt(this.dataset.ongkir, 10);
             document.getElementById('ongkirLabel').textContent = fmt(ongkir);
-            document.getElementById('totalLabel').textContent = fmt(SUBTOTAL + ongkir);
+            document.getElementById('totalLabel').textContent = fmt(BASE + ongkir);
         });
     });
 </script>

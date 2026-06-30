@@ -57,6 +57,9 @@
                 </div>
             @endforeach
             <div class="line" style="margin-top:10px;"><span class="k">Subtotal</span><span>Rp{{ number_format($pesanan->subtotal, 0, ',', '.') }}</span></div>
+            @if ($pesanan->diskon > 0)
+                <div class="line"><span class="k">Diskon{{ $pesanan->kode_voucher ? ' ('.$pesanan->kode_voucher.')' : '' }}</span><span style="color:var(--primary-deep);">− Rp{{ number_format($pesanan->diskon, 0, ',', '.') }}</span></div>
+            @endif
             <div class="line"><span class="k">Ongkir</span><span>Rp{{ number_format($pesanan->ongkir, 0, ',', '.') }}</span></div>
             <div class="grand"><span>Total</span><b>Rp{{ number_format($pesanan->total, 0, ',', '.') }}</b></div>
         </div>

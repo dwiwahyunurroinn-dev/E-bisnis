@@ -26,6 +26,10 @@
     .buybox .label-q { font-size: .8rem; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); margin-bottom: 12px; font-weight: 700; }
     .buybox .sumrow { display: flex; justify-content: space-between; align-items: center; margin: 18px 0; font-size: .9rem; }
     .buybox .total { font-weight: 800; font-size: 1.3rem; color: var(--primary-deep); }
+    .rate-input { display: inline-flex; flex-direction: row-reverse; gap: 4px; }
+    .rate-input input { display: none; }
+    .rate-input label { color: var(--line); cursor: pointer; transition: color .12s; }
+    .rate-input input:checked ~ label, .rate-input label:hover, .rate-input label:hover ~ label { color: var(--star); }
     @media (max-width: 900px) { .detail { grid-template-columns: 1fr; } .detail-gallery, .buybox { position: static; } }
 </style>
 @endpush
@@ -105,8 +109,73 @@
         </form>
     </div>
 
+    {{-- Ulasan --}}
+    <div class="section-head" id="ulasan"><h2>Ulasan Pembeli</h2></div>
+    <div class="card-panel reveal" style="margin-bottom:24px;">
+        <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px;">
+            <div style="text-align:center;">
+                <div style="font-size:2.4rem;font-weight:800;color:var(--primary-deep);line-height:1;">
+                    {{ $produk->jumlahUlasan() ? number_format($produk->ratingRata(),1) : '–' }}
+                </div>
+                <div class="stars" style="justify-content:center;margin-top:4px;">
+                    @for ($i = 1; $i <= 5; $i++)<x-icon name="star" :size="15" style="color:{{ $i <= round($produk->ratingRata()) ? 'var(--star)' : 'var(--line)' }};"/>@endfor
+                </div>
+                <div style="font-size:.8rem;color:var(--ink-soft);margin-top:4px;">{{ $produk->jumlahUlasan() }} ulasan</div>
+            </div>
+            <div style="flex:1;min-width:200px;font-size:.88rem;color:var(--ink-soft);">
+                @auth
+                    @if ($bolehUlas)
+                        Bagikan pengalaman Anda dengan produk ini di bawah.
+                    @else
+                        Hanya pembeli produk ini yang dapat memberi ulasan.
+                    @endif
+                @else
+                    <a href="{{ route('login') }}" style="color:var(--primary);font-weight:600;">Masuk</a> untuk memberi ulasan.
+                @endauth
+            </div>
+        </div>
+
+        @if ($bolehUlas)
+            <form method="POST" action="{{ route('ulasan.store', $produk) }}" style="margin-bottom:18px;">
+                @csrf
+                <div class="field" style="margin-bottom:10px;">
+                    <label>Rating Anda</label>
+                    <div class="rate-input">
+                        @for ($i = 5; $i >= 1; $i--)
+                            <input type="radio" name="rating" id="r{{ $i }}" value="{{ $i }}" {{ ($ulasanSaya->rating ?? 0) == $i ? 'checked' : '' }}>
+                            <label for="r{{ $i }}" title="{{ $i }} bintang"><x-icon name="star" :size="26"/></label>
+                        @endfor
+                    </div>
+                    @error('rating')<div class="err">{{ $message }}</div>@enderror
+                </div>
+                <div class="field">
+                    <label>Komentar (opsional)</label>
+                    <textarea name="komentar" rows="3" placeholder="Bagaimana kualitas produknya?">{{ $ulasanSaya->komentar ?? '' }}</textarea>
+                </div>
+                <button class="btn btn-primary">{{ $ulasanSaya ? 'Perbarui Ulasan' : 'Kirim Ulasan' }}</button>
+            </form>
+        @endif
+
+        @forelse ($produk->ulasan as $u)
+            <div style="padding:14px 0;border-top:1px solid var(--line);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="width:34px;height:34px;border-radius:50%;background:var(--primary-soft);color:var(--primary-deep);display:grid;place-items:center;font-weight:800;">{{ strtoupper(substr($u->user->name ?? '?',0,1)) }}</span>
+                    <div>
+                        <b style="font-size:.9rem;">{{ $u->user->name ?? 'Pengguna' }}</b>
+                        <div class="stars" style="font-size:.8rem;">@for($i=1;$i<=5;$i++)<x-icon name="star" :size="13" style="color:{{ $i <= $u->rating ? 'var(--star)' : 'var(--line)' }};"/>@endfor</div>
+                    </div>
+                    <time style="margin-left:auto;font-size:.76rem;color:var(--ink-soft);">{{ $u->created_at->diffForHumans() }}</time>
+                </div>
+                @if ($u->komentar)<p style="font-size:.9rem;color:var(--ink-soft);margin-top:8px;">{{ $u->komentar }}</p>@endif
+            </div>
+        @empty
+            <p style="color:var(--ink-soft);font-size:.9rem;">Belum ada ulasan. Jadilah yang pertama!</p>
+        @endforelse
+    </div>
+
     @if ($terkait->isNotEmpty())
-        <div class="section-head"><h2>Produk Serupa</h2></div>
+        <div class="section-head"><h2>Produk Serupa</h2></div>@endif
+    @if ($terkait->isNotEmpty())
         <div class="grid">
             @foreach ($terkait as $p)
                 <a href="{{ route('produk.show', $p) }}" class="pcard reveal">

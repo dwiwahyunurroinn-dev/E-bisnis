@@ -67,8 +67,10 @@
             <div class="card-panel summary reveal">
                 <h3>Ringkasan Belanja</h3>
                 <div class="row"><span>Subtotal ({{ $items->sum('qty') }} item)</span><span>Rp{{ number_format($subtotal, 0, ',', '.') }}</span></div>
+                @if ($namaBundle)<div class="row" style="color:var(--accent);"><span>Paket: {{ $namaBundle }}</span><span></span></div>@endif
+                @if ($diskon > 0)<div class="row" style="color:var(--primary-deep);font-weight:700;"><span>Diskon paket</span><span>− Rp{{ number_format($diskon, 0, ',', '.') }}</span></div>@endif
                 <div class="row"><span>Ongkir</span><span>Dihitung saat checkout</span></div>
-                <div class="grand"><span>Total</span><b>Rp{{ number_format($subtotal, 0, ',', '.') }}</b></div>
+                <div class="grand"><span>Total</span><b>Rp{{ number_format($total, 0, ',', '.') }}</b></div>
                 <a href="{{ route('checkout.index') }}" class="btn btn-primary btn-block">Lanjut ke Checkout →</a>
                 <a href="{{ route('produk.index') }}" class="btn btn-outline btn-block" style="margin-top:10px;">Tambah Produk Lain</a>
             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bundle;
 use App\Models\Kategori;
 use App\Models\Produk;
 use App\Models\Promo;
@@ -20,6 +21,8 @@ class ProdukController extends Controller
         $produk = Produk::query()
             ->aktif()
             ->with('kategori')
+            ->withAvg('ulasan', 'rating')
+            ->withCount('ulasan')
             ->when($kategoriAktif, function ($q) use ($kategoriAktif) {
                 $q->whereHas('kategori', fn ($k) => $k->where('slug', $kategoriAktif));
             })
@@ -40,6 +43,7 @@ class ProdukController extends Controller
             'kategori'      => Kategori::orderBy('nama')->get(),
             'kategoriAktif' => $kategoriAktif,
             'promos'        => Promo::aktif()->get(),
+            'bundles'       => Bundle::aktif()->with('produk')->get(),
         ]);
     }
 
@@ -48,14 +52,19 @@ class ProdukController extends Controller
      */
     public function show(Produk $produk): View
     {
-        $produk->load('kategori', 'bahanBaku');
+        $produk->load(['kategori', 'bahanBaku', 'ulasan' => fn ($q) => $q->with('user')->latest()]);
 
         $terkait = Produk::aktif()
+            ->withAvg('ulasan', 'rating')->withCount('ulasan')
             ->where('kategori_id', $produk->kategori_id)
             ->where('id', '!=', $produk->id)
             ->take(4)
             ->get();
 
-        return view('produk.show', compact('produk', 'terkait'));
+        $userId      = auth()->id();
+        $bolehUlas   = $produk->sudahDibeliOleh($userId);
+        $ulasanSaya  = $userId ? $produk->ulasan->firstWhere('user_id', $userId) : null;
+
+        return view('produk.show', compact('produk', 'terkait', 'bolehUlas', 'ulasanSaya'));
     }
 }

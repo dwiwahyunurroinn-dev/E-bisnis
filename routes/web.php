@@ -4,10 +4,12 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\UlasanController;
 use Illuminate\Support\Facades\Route;
 
 // ---------- Storefront ----------
@@ -19,6 +21,14 @@ Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang
 Route::post('/keranjang/{produk}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
 Route::patch('/keranjang/{produk}', [KeranjangController::class, 'ubah'])->name('keranjang.ubah');
 Route::delete('/keranjang/{produk}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+
+// Voucher & bundle (diskon)
+Route::post('/voucher', [DiskonController::class, 'pasangVoucher'])->name('voucher.pasang');
+Route::delete('/voucher', [DiskonController::class, 'lepasVoucher'])->name('voucher.lepas');
+Route::post('/bundle/{bundle}', [DiskonController::class, 'tambahBundle'])->name('bundle.tambah');
+
+// Ulasan produk (wajib login)
+Route::post('/produk/{produk}/ulasan', [UlasanController::class, 'store'])->middleware('auth')->name('ulasan.store');
 
 // Checkout & pesanan
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -54,6 +64,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('produk', Admin\ProdukController::class)->except('show');
     Route::resource('promo', Admin\PromoController::class)->except('show');
+    Route::resource('voucher', Admin\VoucherController::class)->except('show');
+    Route::resource('bundle', Admin\BundleController::class)->except('show');
     Route::resource('user', Admin\UserController::class)->except('show');
 
     Route::get('pesanan', [Admin\PesananController::class, 'index'])->name('pesanan.index');

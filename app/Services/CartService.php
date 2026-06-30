@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Bundle;
 use App\Models\Produk;
+use App\Models\Voucher;
 use Illuminate\Support\Collection;
 
 /**
@@ -12,6 +14,8 @@ use Illuminate\Support\Collection;
 class CartService
 {
     private const KEY = 'keranjang';
+    private const KEY_VOUCHER = 'voucher_kode';
+    private const KEY_BUNDLE  = 'bundle_diskon'; // ['nama' => , 'nilai' => int]
 
     public function tambah(int $produkId, int $qty = 1): void
     {
@@ -40,7 +44,66 @@ class CartService
 
     public function kosongkan(): void
     {
-        session()->forget(self::KEY);
+        session()->forget([self::KEY, self::KEY_VOUCHER, self::KEY_BUNDLE]);
+    }
+
+    /* ---------------- Voucher ---------------- */
+
+    public function pasangVoucher(string $kode): void
+    {
+        session()->put(self::KEY_VOUCHER, strtoupper($kode));
+    }
+
+    public function lepasVoucher(): void
+    {
+        session()->forget(self::KEY_VOUCHER);
+    }
+
+    public function voucher(): ?Voucher
+    {
+        $kode = session()->get(self::KEY_VOUCHER);
+
+        return $kode ? Voucher::where('kode', $kode)->first() : null;
+    }
+
+    public function diskonVoucher(): int
+    {
+        $v = $this->voucher();
+
+        return $v ? $v->potongan($this->subtotal()) : 0;
+    }
+
+    /* ---------------- Bundle ---------------- */
+
+    /** Tambahkan paket: masukkan produknya + catat penghematan paket. */
+    public function tambahBundle(Bundle $bundle): void
+    {
+        foreach ($bundle->produk as $p) {
+            $this->tambah($p->id, (int) $p->pivot->jumlah);
+        }
+
+        $diskon = (int) $bundle->hemat() + $this->diskonBundle();
+        session()->put(self::KEY_BUNDLE, ['nama' => $bundle->nama, 'nilai' => $diskon]);
+    }
+
+    public function diskonBundle(): int
+    {
+        return (int) (session()->get(self::KEY_BUNDLE)['nilai'] ?? 0);
+    }
+
+    public function namaBundle(): ?string
+    {
+        return session()->get(self::KEY_BUNDLE)['nama'] ?? null;
+    }
+
+    public function diskonTotal(): int
+    {
+        return $this->diskonVoucher() + $this->diskonBundle();
+    }
+
+    public function total(): float
+    {
+        return max(0, $this->subtotal() - $this->diskonTotal());
     }
 
     /** @return Collection<int, array{produk: Produk, qty: int, subtotal: float}> */

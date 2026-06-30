@@ -24,6 +24,17 @@
     .quick-add button { width: 100%; gap: 6px; padding: 9px; font-size: .82rem; }
     .sortbar { display: flex; align-items: center; gap: 8px; }
     .sortbar select { padding: 8px 12px; border: 1.6px solid var(--line); border-radius: 10px; font-family: inherit; font-size: .85rem; background: #fff; cursor: pointer; }
+    .bundle-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 30px; }
+    .bundle-card { background: linear-gradient(135deg,#fff,var(--primary-mint)); border: 1.5px dashed var(--primary); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 14px; transition: transform .2s var(--ease), box-shadow .2s; }
+    .bundle-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .bundle-items { display: flex; flex-direction: column; gap: 8px; }
+    .bundle-items .bi { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 600; color: var(--ink); }
+    .bundle-items .bi small { color: var(--ink-soft); font-weight: 500; }
+    .bundle-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: auto; border-top: 1px dashed var(--primary); padding-top: 12px; }
+    .bnama { font-weight: 700; font-size: .85rem; margin-bottom: 4px; }
+    .bnow { font-size: 1.2rem; font-weight: 800; color: var(--primary-deep); }
+    .bwas { font-size: .78rem; color: var(--ink-soft); text-decoration: line-through; margin-left: 6px; }
+    .bhemat { display: block; font-size: .76rem; color: var(--accent); font-weight: 700; margin-top: 2px; }
     @media (max-width: 640px) { .slide { padding: 32px 24px; } .slide h1 { font-size: 1.5rem; } .slider-dots { left: 24px; } }
 </style>
 @endpush
@@ -69,6 +80,32 @@
         <div class="trust-item reveal"><span class="t-ico"><x-icon name="shield" :size="26"/></span><div><b>Garansi Kualitas</b><span>Finishing premium</span></div></div>
         <div class="trust-item reveal"><span class="t-ico"><x-icon name="card" :size="26"/></span><div><b>Pembayaran Mudah</b><span>Banyak metode bayar</span></div></div>
     </div>
+
+    @if ($bundles->isNotEmpty())
+        <div class="section-head"><h2>Paket Hemat</h2><span class="sub">Beli sepaket, lebih murah</span></div>
+        <div class="bundle-grid">
+            @foreach ($bundles as $b)
+                <div class="bundle-card reveal">
+                    <div class="bundle-items">
+                        @foreach ($b->produk as $bp)
+                            <span class="bi"><x-icon name="sofa" :size="20"/> {{ $bp->nama }} <small>×{{ $bp->pivot->jumlah }}</small></span>
+                        @endforeach
+                    </div>
+                    <div class="bundle-foot">
+                        <div>
+                            <div class="bnama">{{ $b->nama }}</div>
+                            <span class="bnow">Rp{{ number_format($b->harga_bundle, 0, ',', '.') }}</span>
+                            <span class="bwas">Rp{{ number_format($b->hargaNormal(), 0, ',', '.') }}</span>
+                            <span class="bhemat">Hemat Rp{{ number_format($b->hemat(), 0, ',', '.') }}</span>
+                        </div>
+                        <form method="POST" action="{{ route('bundle.tambah', $b) }}">@csrf
+                            <button class="btn btn-primary"><x-icon name="cart" :size="16"/> Beli Paket</button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 
     <div class="section-head" id="katalog">
         <h2>

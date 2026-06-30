@@ -222,6 +222,13 @@
         .foot-grid a:hover { color: #fff; }
         .foot-bottom { border-top: 1px solid rgba(255,255,255,.1); padding: 18px 0; text-align: center; font-size: .8rem; color: #8fa39b; }
 
+        /* Floating help mascot */
+        .help-fab { position: fixed; right: 22px; bottom: 22px; z-index: 80; width: 68px; height: 68px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-lg); display: grid; place-items: center; transition: transform .2s var(--ease); animation: float 5s ease-in-out infinite; }
+        .help-fab:hover { transform: scale(1.08) translateY(-2px); }
+        .help-tip { position: absolute; right: 78px; bottom: 14px; background: var(--ink); color: #fff; font-size: .8rem; font-weight: 600; padding: 8px 13px; border-radius: 10px; white-space: nowrap; opacity: 0; pointer-events: none; transform: translateX(8px); transition: all .2s var(--ease); }
+        .help-fab:hover .help-tip { opacity: 1; transform: translateX(0); }
+        @media (max-width: 640px) { .help-fab { width: 56px; height: 56px; right: 14px; bottom: 14px; } }
+
         .empty { text-align: center; padding: 70px 0; color: var(--ink-soft); }
         .empty .big { font-size: 3.4rem; margin-bottom: 12px; }
 
@@ -295,6 +302,12 @@
     @endif
 
     @yield('content')
+
+    {{-- Bubble bantuan dengan maskot Tunas --}}
+    <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" class="help-fab" aria-label="Bantuan">
+        <span class="help-tip">Butuh bantuan? Sapa kami!</span>
+        <x-mascot :size="58" />
+    </a>
 
     <footer>
         <div class="container">

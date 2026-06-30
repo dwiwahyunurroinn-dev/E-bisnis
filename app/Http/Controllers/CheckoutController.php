@@ -32,10 +32,13 @@ class CheckoutController extends Controller
         }
 
         return view('checkout.index', [
-            'items'      => $this->cart->items(),
-            'subtotal'   => $this->cart->subtotal(),
-            'beratGram'  => $this->cart->beratGram(),
-            'opsiOngkir' => $this->ongkir->opsi(null, $this->cart->beratGram()),
+            'items'        => $this->cart->items(),
+            'subtotal'     => $this->cart->subtotal(),
+            'diskon'       => $this->cart->diskonTotal(),
+            'voucher'      => $this->cart->voucher(),
+            'namaBundle'   => $this->cart->namaBundle(),
+            'beratGram'    => $this->cart->beratGram(),
+            'opsiOngkir'   => $this->ongkir->opsi(null, $this->cart->beratGram()),
         ]);
     }
 
@@ -65,9 +68,11 @@ class CheckoutController extends Controller
 
         $items    = $this->cart->items();
         $subtotal = $this->cart->subtotal();
-        $total    = $subtotal + $opsi['ongkir'];
+        $diskon   = $this->cart->diskonTotal();
+        $voucher  = $this->cart->voucher();
+        $total    = max(0, $subtotal - $diskon) + $opsi['ongkir'];
 
-        $pesanan = DB::transaction(function () use ($data, $items, $subtotal, $opsi, $total, $kurir) {
+        $pesanan = DB::transaction(function () use ($data, $items, $subtotal, $diskon, $voucher, $opsi, $total, $kurir) {
             // Jika sudah login pakai akun tsb, jika tidak (guest) cari/buat via email.
             $user = auth()->user() ?? User::firstOrCreate(
                 ['email' => $data['email']],
@@ -85,16 +90,23 @@ class CheckoutController extends Controller
             ]);
 
             $pesanan = Pesanan::create([
-                'kode'      => $this->buatKode(),
-                'user_id'   => $user->id,
-                'alamat_id' => $alamat->id,
-                'kurir'     => $kurir,
-                'layanan'   => $opsi['layanan'],
-                'subtotal'  => $subtotal,
-                'ongkir'    => $opsi['ongkir'],
-                'total'     => $total,
-                'status'    => 'pending',
+                'kode'         => $this->buatKode(),
+                'user_id'      => $user->id,
+                'alamat_id'    => $alamat->id,
+                'kurir'        => $kurir,
+                'layanan'      => $opsi['layanan'],
+                'subtotal'     => $subtotal,
+                'diskon'       => $diskon,
+                'kode_voucher' => $voucher?->kode,
+                'ongkir'       => $opsi['ongkir'],
+                'total'        => $total,
+                'status'       => 'pending',
             ]);
+
+            // Catat pemakaian voucher.
+            if ($voucher) {
+                $voucher->increment('terpakai');
+            }
 
             foreach ($items as $i) {
                 DetailPesanan::create([
