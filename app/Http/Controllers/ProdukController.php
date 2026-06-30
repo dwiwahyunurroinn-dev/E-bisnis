@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kategori;
 use App\Models\Produk;
+use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -33,6 +34,7 @@ class ProdukController extends Controller
             'produk'        => $produk,
             'kategori'      => Kategori::orderBy('nama')->get(),
             'kategoriAktif' => $kategoriAktif,
+            'promos'        => Promo::aktif()->get(),
         ]);
     }
 

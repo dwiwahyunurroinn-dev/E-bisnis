@@ -41,7 +41,7 @@
                     <div class="cart-item">
                         <a href="{{ route('produk.show', $i['produk']) }}" class="ci-thumb">
                             <span>{{ $i['produk']->emoji() }}</span>
-                            <img loading="lazy" src="{{ asset('images/produk/'.$i['produk']->gambar) }}" alt="" onerror="this.remove()">
+                            @if ($i['produk']->gambarUrl())<img loading="lazy" src="{{ $i['produk']->gambarUrl() }}" alt="" onerror="this.remove()">@endif
                         </a>
                         <div class="ci-info">
                             <span class="pcat">{{ $i['produk']->kategori->nama }}</span>

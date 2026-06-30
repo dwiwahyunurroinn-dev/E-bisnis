@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'KayuReclaimed — Marketplace Furnitur Kayu Daur Ulang')</title>
+    <title>@yield('title', config('toko.nama').' — '.config('toko.tagline'))</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -206,13 +206,16 @@
     <div class="topbar">
         <div class="container">
             <span>♻️ Furnitur dari 100% kayu daur ulang — ramah lingkungan</span>
-            <span><a href="#">Bantuan</a> &nbsp;·&nbsp; <a href="#">Lacak Pesanan</a> &nbsp;·&nbsp; <a href="#">Tentang Kami</a></span>
+            <span>
+                <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener">📷 @{{ config('toko.instagram') }}</a>
+                &nbsp;·&nbsp; <a href="#">Bantuan</a> &nbsp;·&nbsp; <a href="#">Lacak Pesanan</a>
+            </span>
         </div>
     </div>
 
     <header>
         <div class="container header-main">
-            <a href="{{ route('produk.index') }}" class="logo"><span class="leaf">🌿</span> Kayu<b>Reclaimed</b></a>
+            <a href="{{ route('produk.index') }}" class="logo"><span class="leaf">🌿</span> Eco<b>Craft</b></a>
             <div class="searchbar">
                 <form action="{{ route('produk.index') }}" method="get">
                     <input type="text" name="q" placeholder="Cari meja belajar, rak buku, kursi cafe..." value="{{ request('q') }}">
@@ -224,7 +227,16 @@
                     🛒 <span class="label">Keranjang</span>
                     <span class="cart-badge" id="cartBadge" {{ ($cartCount ?? 0) ? '' : 'style=display:none' }}>{{ $cartCount ?? 0 }}</span>
                 </a>
-                <a href="#" class="icon-btn solid">👤 <span class="label">Masuk</span></a>
+                @auth
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="icon-btn">📊 <span class="label">Dashboard</span></a>
+                    @endif
+                    <a href="#" class="icon-btn solid">👤 <span class="label">{{ Str::limit(auth()->user()->name, 12) }}</span></a>
+                    <form method="POST" action="{{ route('logout') }}">@csrf<button class="icon-btn" type="submit" style="border:none;background:none;cursor:pointer;font-family:inherit;">↩ <span class="label">Keluar</span></button></form>
+                @else
+                    <a href="{{ route('login') }}" class="icon-btn">Masuk</a>
+                    <a href="{{ route('register') }}" class="icon-btn solid">Daftar</a>
+                @endauth
             </div>
         </div>
         <div class="catnav">
@@ -249,15 +261,16 @@
         <div class="container">
             <div class="foot-grid">
                 <div>
-                    <h4 style="color:#fff;font-size:1.2rem;">🌿 KayuReclaimed</h4>
-                    <p>Marketplace furnitur berbahan kayu daur ulang. Setiap pembelian Anda membantu mengurangi limbah kayu.</p>
+                    <h4 style="color:#fff;font-size:1.2rem;">🌿 {{ config('toko.nama') }}</h4>
+                    <p>{{ config('toko.tagline') }}. Setiap pembelian Anda membantu mengurangi limbah kayu.</p>
+                    <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" style="font-weight:600;color:#fff;">📷 @{{ config('toko.instagram') }}</a>
                 </div>
                 <div><h4>Belanja</h4><a href="{{ route('produk.index') }}">Semua Produk</a><a href="#">Produk Terlaris</a><a href="#">Promo & Bundle</a></div>
                 <div><h4>Bantuan</h4><a href="#">Cara Belanja</a><a href="#">Pengiriman</a><a href="#">Kebijakan Retur</a></div>
-                <div><h4>Hubungi Kami</h4><p>📧 halo@kayureclaimed.id</p><p>📱 0812-3456-7890</p></div>
+                <div><h4>Hubungi Kami</h4><p>📧 {{ config('toko.email') }}</p><p>📱 {{ config('toko.telepon') }}</p><p>📷 @{{ config('toko.instagram') }}</p></div>
             </div>
         </div>
-        <div class="foot-bottom">© {{ date('Y') }} KayuReclaimed — Dibuat dengan ❤️ untuk bumi.</div>
+        <div class="foot-bottom">© {{ date('Y') }} {{ config('toko.nama') }} — Dibuat dengan ❤️ untuk bumi.</div>
     </footer>
 
     <script>

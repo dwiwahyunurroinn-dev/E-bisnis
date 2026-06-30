@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Alamat;
 use App\Models\DetailPesanan;
 use App\Models\Pesanan;
@@ -109,6 +110,7 @@ class CheckoutController extends Controller
         });
 
         $this->cart->kosongkan();
+        ActivityLog::catat('pesanan baru', $pesanan->kode, 'Total Rp'.number_format($total, 0, ',', '.'));
 
         return redirect()->route('pesanan.show', $pesanan->kode);
     }

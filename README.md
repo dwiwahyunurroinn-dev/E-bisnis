@@ -1,7 +1,16 @@
-# KayuReclaimed — E-Commerce Furnitur Kayu Daur Ulang
+# Eco Craft — E-Commerce Furnitur Kayu Daur Ulang
 
 Aplikasi e-commerce (Laravel 13 + MySQL) untuk UMKM furnitur berbahan kayu daur ulang.
-Dibangun bertahap menyelesaikan 6 masalah bisnis. Repo ini berisi **Fase 1 (pondasi)**.
+Mencakup **storefront** (etalase belanja) dan **panel admin** lengkap.
+
+## Akun demo
+
+| Peran | Email | Password |
+|-------|-------|----------|
+| Admin | `admin@ecocraft.id` | `password` |
+| Pelanggan | `pelanggan@contoh.com` | `password` |
+
+Panel admin: buka `/admin` setelah login sebagai admin.
 
 ## Status pengembangan
 
@@ -9,11 +18,27 @@ Dibangun bertahap menyelesaikan 6 masalah bisnis. Repo ini berisi **Fase 1 (pond
 |------|-------|--------|
 | **1** | Database inventory (produk, bahan baku many-to-many, pesanan) + **trigger pengurang stok otomatis** saat pesanan `lunas` | ✅ Selesai |
 | **1** | Galeri produk + UI marketplace modern (hijau soft, animasi) + lazy loading + filter + pencarian | ✅ Selesai |
-| **2** | Keranjang + single-page checkout + kalkulator ongkir + simulasi pembayaran (memicu trigger stok) | ✅ Selesai |
-| **2+** | Integrasi RajaOngkir & Midtrans/Xendit asli (ganti simulasi) + auth pelanggan | ⏳ Berikutnya |
-| **3** | Loyalty program: voucher generator + bundle offers | ⬜ Rencana |
-| **4** | Chatbot CRM (FAQ otomatis + handoff ke admin) | ⬜ Rencana |
-| **5** | Caching & optimasi query untuk traffic tinggi | ⬜ Rencana |
+| **2** | Keranjang + single-page checkout + kalkulator ongkir + pembayaran (memicu trigger stok) | ✅ Selesai |
+| **3** | Auth (login/register, role admin & pelanggan) + integrasi **Midtrans Snap** (gated) | ✅ Selesai |
+| **3** | **Panel admin**: dashboard+grafik, CRUD produk (upload gambar lokal), pesanan, stok, pelanggan, user, promo/slider, laporan periode + ekspor CSV, log aktivitas | ✅ Selesai |
+| **3** | Storefront: rebrand **Eco Craft** + Instagram, live promo slider, animasi modern | ✅ Selesai |
+| **4** | Loyalty: voucher generator + bundle offers | ⬜ Rencana |
+| **5** | Chatbot CRM (FAQ otomatis + handoff ke admin) | ⬜ Rencana |
+| **6** | Caching & optimasi query untuk traffic tinggi | ⬜ Rencana |
+
+### Panel admin (`/admin`)
+
+Dashboard (statistik + grafik penjualan 7 hari), manajemen **Produk** (CRUD +
+upload gambar dari komputer), **Pesanan** (ubah status), **Stok** (produk &
+bahan baku), **Pelanggan**, **User** (role), **Promo/Slider**, **Laporan**
+(filter periode + ekspor CSV), dan **Log Aktivitas**. Akses dijaga middleware
+`admin` (role-based).
+
+### Pembayaran (Midtrans)
+
+Isi `MIDTRANS_SERVER_KEY` & `MIDTRANS_CLIENT_KEY` di `.env` untuk mengaktifkan
+pembayaran asli (Snap) + webhook di `/midtrans/webhook`. Bila kosong, aplikasi
+memakai mode **simulasi** (tombol bayar manual). Lihat `app/Services/PaymentService.php`.
 
 ### Alur belanja (Fase 2)
 

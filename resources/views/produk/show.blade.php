@@ -45,7 +45,7 @@
                     <span class="badge-disc">-{{ $produk->persenDiskon() }}%</span>
                 @endif
                 <span class="ph-emoji">{{ $produk->emoji() }}</span>
-                <img loading="lazy" decoding="async" src="{{ asset('images/produk/'.$produk->gambar) }}" alt="{{ $produk->nama }}" onerror="this.remove()">
+                @if ($produk->gambarUrl())<img loading="lazy" decoding="async" src="{{ $produk->gambarUrl() }}" alt="{{ $produk->nama }}" onerror="this.remove()">@endif
             </div>
         </div>
 
@@ -113,7 +113,7 @@
                     <div class="pthumb">
                         @if ($p->persenDiskon() > 0)<span class="badge-disc">-{{ $p->persenDiskon() }}%</span>@endif
                         <span class="ph-emoji">{{ $p->emoji() }}</span>
-                        <img loading="lazy" decoding="async" src="{{ asset('images/produk/'.$p->gambar) }}" alt="{{ $p->nama }}" onerror="this.remove()">
+                        @if ($p->gambarUrl())<img loading="lazy" decoding="async" src="{{ $p->gambarUrl() }}" alt="{{ $p->nama }}" onerror="this.remove()">@endif
                     </div>
                     <div class="pbody">
                         <span class="pcat">{{ $p->kategori->nama }}</span>

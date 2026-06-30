@@ -55,6 +55,18 @@ class Produk extends Model
      | ulasan & promo sungguhan (Fase 3). Mudah diganti data asli nanti.
      * ------------------------------------------------------------------ */
 
+    public function gambarUrl(): ?string
+    {
+        if (! $this->gambar) {
+            return null;
+        }
+
+        // Gambar hasil upload admin disimpan di storage (path "produk/...").
+        return str_starts_with($this->gambar, 'produk/')
+            ? asset('storage/'.$this->gambar)
+            : asset('images/produk/'.$this->gambar);
+    }
+
     public function emoji(): string
     {
         return match ($this->kategori?->slug) {
