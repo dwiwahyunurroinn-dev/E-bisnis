@@ -78,6 +78,17 @@ class DeploySiapTest extends TestCase
         $this->get(route('produk.index'))->assertSee('Kursi Unik'); // cache harus segar
     }
 
+    public function test_cache_database_store_dua_request_tidak_error(): void
+    {
+        // Regresi: store database menserialisasi objek; request kedua membaca
+        // hasil unserialize (dibatasi cache.serializable_classes) dan harus tetap utuh.
+        config(['cache.default' => 'database']);
+        Kategori::create(['nama' => 'Meja', 'slug' => 'meja']);
+
+        $this->get(route('produk.index'))->assertOk();           // tulis cache
+        $this->get(route('produk.index'))->assertOk()->assertSee('Meja'); // baca cache
+    }
+
     /* ---------------- Rate limiting ---------------- */
 
     public function test_login_dibatasi_setelah_percobaan_beruntun(): void

@@ -131,6 +131,15 @@ return [
     |
     */
 
-    'serializable_classes' => false,
+    // Hanya kelas katalog (dipakai App\Services\KatalogCache) yang boleh
+    // di-unserialize dari cache; kelas lain tetap diblokir.
+    'serializable_classes' => [
+        Illuminate\Database\Eloquent\Collection::class,
+        Illuminate\Database\Eloquent\Relations\Pivot::class,
+        App\Models\Kategori::class,
+        App\Models\Produk::class,
+        App\Models\Promo::class,
+        App\Models\Bundle::class,
+    ],
 
 ];
