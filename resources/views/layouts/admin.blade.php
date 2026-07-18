@@ -135,6 +135,14 @@
         <a href="{{ route('admin.voucher.index') }}" class="nav-item {{ str_starts_with($r,'admin.voucher')?'active':'' }}"><span class="ic"><x-icon name="tag" :size="19"/></span> Voucher</a>
         <a href="{{ route('admin.bundle.index') }}" class="nav-item {{ str_starts_with($r,'admin.bundle')?'active':'' }}"><span class="ic"><x-icon name="package" :size="19"/></span> Bundle / Paket</a>
 
+        <div class="nav-group">Chatbot CRM</div>
+        <a href="{{ route('admin.obrolan.index') }}" class="nav-item {{ str_starts_with($r,'admin.obrolan')?'active':'' }}">
+            <span class="ic"><x-icon name="chat" :size="19"/></span> Live Chat
+            @php $menungguAdmin = \App\Models\Obrolan::menungguAdmin()->count(); @endphp
+            @if ($menungguAdmin) <span class="pill">{{ $menungguAdmin }}</span> @endif
+        </a>
+        <a href="{{ route('admin.faq.index') }}" class="nav-item {{ str_starts_with($r,'admin.faq')?'active':'' }}"><span class="ic"><x-icon name="clipboard" :size="19"/></span> FAQ Chatbot</a>
+
         <div class="nav-group">Pengguna</div>
         <a href="{{ route('admin.pelanggan.index') }}" class="nav-item {{ str_starts_with($r,'admin.pelanggan')?'active':'' }}"><span class="ic"><x-icon name="users" :size="19"/></span> Pelanggan</a>
         <a href="{{ route('admin.user.index') }}" class="nav-item {{ str_starts_with($r,'admin.user')?'active':'' }}"><span class="ic"><x-icon name="key" :size="19"/></span> Manajemen User</a>

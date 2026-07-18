@@ -22,8 +22,9 @@ Panel admin: buka `/admin` setelah login sebagai admin.
 | **3** | Auth (login/register, role admin & pelanggan) + integrasi **Midtrans Snap** (gated) | ✅ Selesai |
 | **3** | **Panel admin**: dashboard+grafik, CRUD produk (upload gambar lokal), pesanan, stok, pelanggan, user, promo/slider, laporan periode + ekspor CSV, log aktivitas | ✅ Selesai |
 | **3** | Storefront: rebrand **Eco Craft** + Instagram, live promo slider, animasi modern | ✅ Selesai |
-| **4** | Loyalty: voucher generator + bundle offers | ⬜ Rencana |
-| **5** | Chatbot CRM (FAQ otomatis + handoff ke admin) | ⬜ Rencana |
+| **4** | Loyalty: voucher generator + bundle offers, ulasan produk, poin & tier membership | ✅ Selesai |
+| **4** | Standar marketplace: checkout wajib login, dashboard akun (profil, pesanan, buku alamat), notifikasi, auto-expire pesanan pending | ✅ Selesai |
+| **5** | **Chatbot CRM**: widget live chat di storefront, FAQ otomatis berbasis kata kunci, handoff ke admin (live chat) saat bot tak punya jawaban | ✅ Selesai |
 | **6** | Caching & optimasi query untuk traffic tinggi | ⬜ Rencana |
 
 ### Panel admin (`/admin`)
@@ -39,6 +40,17 @@ bahan baku), **Pelanggan**, **User** (role), **Promo/Slider**, **Laporan**
 Isi `MIDTRANS_SERVER_KEY` & `MIDTRANS_CLIENT_KEY` di `.env` untuk mengaktifkan
 pembayaran asli (Snap) + webhook di `/midtrans/webhook`. Bila kosong, aplikasi
 memakai mode **simulasi** (tombol bayar manual). Lihat `app/Services/PaymentService.php`.
+
+### Live chat & chatbot FAQ (Fase 5)
+
+Widget bulat di kanan-bawah setiap halaman (guest maupun login) membuka panel chat:
+
+1. Pesan pelanggan dicocokkan ke **FAQ** (`app/Services/ChatbotService.php`) lewat kata kunci
+   (dikelola admin di `/admin/faq`) — jika cocok, bot langsung membalas.
+2. Jika tidak ada yang cocok (atau pelanggan klik "Bicara dengan Admin"), percakapan
+   ditandai `menunggu_admin`, admin mendapat notifikasi, dan bisa membalas manual di `/admin/obrolan`.
+3. Tamu (belum login) tetap bisa chat — sesi dikenali lewat token acak di session, mirip keranjang.
+4. Tombol "Via WhatsApp" tetap tersedia sebagai jalur alternatif ke admin.
 
 ### Alur belanja (Fase 2)
 
@@ -95,10 +107,8 @@ Saat status `pesanan` berubah menjadi `lunas`, trigger MySQL otomatis:
 > Catatan: trigger hanya berjalan pada koneksi MySQL/MariaDB. Pada SQLite (dev) trigger dilewati,
 > sehingga pengurangan stok di dev SQLite perlu ditangani di layer aplikasi nanti.
 
-## Langkah berikutnya (Fase 2)
+## Langkah berikutnya (Fase 6)
 
-1. Auth pelanggan (register/login) — gunakan Laravel Breeze/Fortify.
-2. Keranjang belanja (session/db).
-3. Halaman single-page checkout: alamat → pilih kurir → ongkir otomatis → bayar.
-4. Service `RajaOngkir` untuk hitung ongkir, `Midtrans` untuk pembayaran + webhook
-   yang mengubah status pesanan menjadi `lunas` (memicu trigger stok).
+1. Caching query katalog (produk, kategori) & dashboard admin dengan `Cache` facade.
+2. Optimasi query (eager loading, index tambahan) untuk traffic tinggi.
+3. Pertimbangkan queue untuk pengiriman notifikasi/log agar request tetap cepat.

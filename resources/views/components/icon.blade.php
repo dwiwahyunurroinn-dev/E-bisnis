@@ -44,6 +44,7 @@
         'dashboard'   => '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/>',
         'alert'       => '<path d="M12 3 2 20h20z"/><line x1="12" y1="10" x2="12" y2="14"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>',
         'clock'       => '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>',
+        'chat'        => '<path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
         'dot'         => '<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>',
     ];
     $fill = [

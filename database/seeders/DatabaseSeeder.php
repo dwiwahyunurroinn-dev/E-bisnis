@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(KatalogSeeder::class);
+        $this->call(FaqSeeder::class);
 
         // Voucher demo
         Voucher::insert([

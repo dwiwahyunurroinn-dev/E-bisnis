@@ -223,11 +223,40 @@
         .foot-bottom { border-top: 1px solid rgba(255,255,255,.1); padding: 18px 0; text-align: center; font-size: .8rem; color: #8fa39b; }
 
         /* Floating help mascot */
-        .help-fab { position: fixed; right: 22px; bottom: 22px; z-index: 80; width: 68px; height: 68px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-lg); display: grid; place-items: center; transition: transform .2s var(--ease); animation: float 5s ease-in-out infinite; }
+        .help-fab { position: fixed; right: 22px; bottom: 22px; z-index: 80; width: 68px; height: 68px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-lg); display: grid; place-items: center; transition: transform .2s var(--ease); animation: float 5s ease-in-out infinite; border: none; cursor: pointer; }
         .help-fab:hover { transform: scale(1.08) translateY(-2px); }
         .help-tip { position: absolute; right: 78px; bottom: 14px; background: var(--ink); color: #fff; font-size: .8rem; font-weight: 600; padding: 8px 13px; border-radius: 10px; white-space: nowrap; opacity: 0; pointer-events: none; transform: translateX(8px); transition: all .2s var(--ease); }
         .help-fab:hover .help-tip { opacity: 1; transform: translateX(0); }
+        .chat-dot { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--danger); border: 2px solid #fff; }
         @media (max-width: 640px) { .help-fab { width: 56px; height: 56px; right: 14px; bottom: 14px; } }
+
+        /* ============ CHAT WIDGET ============ */
+        .chat-panel { position: fixed; right: 22px; bottom: 100px; width: 350px; max-width: calc(100vw - 28px); height: 470px; max-height: 70vh; background: #fff; border-radius: 18px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; overflow: hidden; z-index: 90; opacity: 0; visibility: hidden; transform: translateY(16px); transition: all .22s var(--ease); }
+        .chat-panel.open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .chat-head { background: linear-gradient(120deg, var(--primary), var(--primary-deep)); color: #fff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .chat-head b { display: block; font-size: .95rem; }
+        .chat-head span { display: block; font-size: .72rem; opacity: .85; }
+        .chat-head button { background: rgba(255,255,255,.18); border: none; border-radius: 8px; width: 30px; height: 30px; display: grid; place-items: center; color: #fff; cursor: pointer; }
+        .chat-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); }
+        .chat-msg { max-width: 82%; display: flex; flex-direction: column; gap: 2px; }
+        .chat-msg.pelanggan { align-self: flex-end; align-items: flex-end; }
+        .chat-msg.bot, .chat-msg.admin { align-self: flex-start; }
+        .chat-bubble { padding: 9px 13px; border-radius: 12px; font-size: .85rem; line-height: 1.4; word-break: break-word; }
+        .chat-msg.pelanggan .chat-bubble { background: var(--primary); color: #fff; border-bottom-right-radius: 3px; }
+        .chat-msg.bot .chat-bubble { background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 3px; }
+        .chat-msg.admin .chat-bubble { background: var(--primary-soft); color: var(--primary-deep); border-bottom-left-radius: 3px; }
+        .chat-time { font-size: .65rem; color: var(--ink-soft); }
+        .chat-empty { text-align: center; color: var(--ink-soft); font-size: .82rem; padding: 30px 10px; }
+        .chat-quick { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); background: #fff; flex-shrink: 0; }
+        .chat-quick button, .chat-quick a { flex: 1; text-align: center; font-size: .76rem; font-weight: 600; padding: 8px 6px; border-radius: 9px; border: 1.4px solid var(--primary); color: var(--primary-dark); background: #fff; cursor: pointer; font-family: inherit; transition: background .15s; }
+        .chat-quick button:hover, .chat-quick a:hover { background: var(--primary-soft); }
+        .chat-quick button:disabled { opacity: .6; cursor: default; background: none; }
+        .chat-quick a { border-color: var(--line); color: var(--ink-soft); }
+        .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); background: #fff; flex-shrink: 0; }
+        .chat-input input { flex: 1; padding: 10px 13px; border: 1.6px solid var(--line); border-radius: 10px; font-family: inherit; font-size: .85rem; outline: none; }
+        .chat-input input:focus { border-color: var(--primary); }
+        .chat-input button { width: 40px; height: 40px; border: none; border-radius: 10px; background: var(--primary); color: #fff; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+        @media (max-width: 640px) { .chat-panel { right: 10px; left: 10px; width: auto; bottom: 84px; } }
 
         .empty { text-align: center; padding: 70px 0; color: var(--ink-soft); }
         .empty .big { font-size: 3.4rem; margin-bottom: 12px; }
@@ -305,11 +334,27 @@
 
     @yield('content')
 
-    {{-- Bubble bantuan via WhatsApp admin --}}
-    <a href="https://wa.me/{{ config('toko.whatsapp') }}?text={{ urlencode(config('toko.whatsapp_text')) }}" target="_blank" rel="noopener" class="help-fab" aria-label="Bantuan via WhatsApp">
-        <span class="help-tip">Butuh bantuan? Chat admin via WhatsApp</span>
+    {{-- Widget live chat + chatbot FAQ --}}
+    <button type="button" class="help-fab" id="chatToggle" aria-label="Buka live chat">
+        <span class="help-tip">Ada pertanyaan? Chat kami</span>
         <x-mascot :size="58" />
-    </a>
+    </button>
+
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-head">
+            <div><b>{{ config('toko.nama') }} Assistant</b><span>Chatbot FAQ &amp; live chat admin</span></div>
+            <button type="button" id="chatClose" aria-label="Tutup"><x-icon name="x" :size="18"/></button>
+        </div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-quick">
+            <button type="button" id="chatMintaAdmin">Bicara dengan Admin</button>
+            <a href="https://wa.me/{{ config('toko.whatsapp') }}?text={{ urlencode(config('toko.whatsapp_text')) }}" target="_blank" rel="noopener">Via WhatsApp</a>
+        </div>
+        <form class="chat-input" id="chatForm">
+            <input type="text" id="chatInput" placeholder="Ketik pertanyaan Anda..." autocomplete="off" maxlength="500">
+            <button type="submit" aria-label="Kirim"><x-icon name="arrow-right" :size="18"/></button>
+        </form>
+    </div>
 
     <footer>
         <div class="container">
@@ -353,6 +398,84 @@
                 if (!el.contains(e.target)) el.classList.remove('open');
             });
         });
+
+        // ---------- Widget live chat / chatbot FAQ ----------
+        (function () {
+            const toggle = document.getElementById('chatToggle');
+            const panel = document.getElementById('chatPanel');
+            const closeBtn = document.getElementById('chatClose');
+            const body = document.getElementById('chatBody');
+            const form = document.getElementById('chatForm');
+            const input = document.getElementById('chatInput');
+            const mintaAdminBtn = document.getElementById('chatMintaAdmin');
+            const csrf = document.querySelector('meta[name="csrf-token"]').content;
+            let loaded = false, polling = null;
+
+            function escapeHtml(s) {
+                const d = document.createElement('div');
+                d.innerText = s;
+                return d.innerHTML;
+            }
+
+            function render(data) {
+                body.innerHTML = data.pesan.length
+                    ? data.pesan.map(p => `
+                        <div class="chat-msg ${p.pengirim}">
+                            <div class="chat-bubble">${escapeHtml(p.pesan)}</div>
+                            <div class="chat-time">${p.waktu}</div>
+                        </div>
+                    `).join('')
+                    : '<div class="chat-empty">Halo! 👋 Tanyakan seputar produk, ongkir, atau pesanan Anda.</div>';
+                body.scrollTop = body.scrollHeight;
+
+                if (data.status === 'menunggu_admin') {
+                    mintaAdminBtn.textContent = 'Menunggu balasan admin…';
+                    mintaAdminBtn.disabled = true;
+                } else if (data.status === 'selesai') {
+                    mintaAdminBtn.style.display = 'none';
+                } else {
+                    mintaAdminBtn.textContent = 'Bicara dengan Admin';
+                    mintaAdminBtn.disabled = false;
+                    mintaAdminBtn.style.display = '';
+                }
+            }
+
+            async function muat() {
+                const res = await fetch('{{ route('obrolan.muat') }}', { headers: { 'Accept': 'application/json' } });
+                if (res.ok) render(await res.json());
+            }
+
+            toggle.addEventListener('click', () => {
+                panel.classList.toggle('open');
+                if (!loaded) {
+                    loaded = true;
+                    muat();
+                    polling = setInterval(muat, 6000);
+                }
+            });
+            closeBtn.addEventListener('click', () => panel.classList.remove('open'));
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const pesan = input.value.trim();
+                if (!pesan) return;
+                input.value = '';
+                const res = await fetch('{{ route('obrolan.kirim') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+                    body: JSON.stringify({ pesan }),
+                });
+                if (res.ok) render(await res.json());
+            });
+
+            mintaAdminBtn.addEventListener('click', async () => {
+                const res = await fetch('{{ route('obrolan.admin') }}', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+                });
+                if (res.ok) render(await res.json());
+            });
+        })();
     </script>
     @yield('scripts')
 </body>

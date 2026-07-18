@@ -8,6 +8,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\ObrolanController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\UlasanController;
@@ -30,6 +31,11 @@ Route::post('/bundle/{bundle}', [DiskonController::class, 'tambahBundle'])->name
 
 // Ulasan produk (wajib login)
 Route::post('/produk/{produk}/ulasan', [UlasanController::class, 'store'])->middleware('auth')->name('ulasan.store');
+
+// Live chat / chatbot FAQ (guest-friendly, seperti keranjang)
+Route::get('/obrolan', [ObrolanController::class, 'muat'])->name('obrolan.muat');
+Route::post('/obrolan', [ObrolanController::class, 'kirim'])->name('obrolan.kirim');
+Route::post('/obrolan/admin', [ObrolanController::class, 'mintaAdmin'])->name('obrolan.admin');
 
 // Checkout & pesanan WAJIB LOGIN (standar marketplace).
 Route::middleware('auth')->group(function () {
@@ -81,7 +87,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('promo', Admin\PromoController::class)->except('show');
     Route::resource('voucher', Admin\VoucherController::class)->except('show');
     Route::resource('bundle', Admin\BundleController::class)->except('show');
+    Route::resource('faq', Admin\FaqController::class)->except('show');
     Route::resource('user', Admin\UserController::class)->except('show');
+
+    Route::get('obrolan', [Admin\ObrolanController::class, 'index'])->name('obrolan.index');
+    Route::get('obrolan/{obrolan}', [Admin\ObrolanController::class, 'show'])->name('obrolan.show');
+    Route::post('obrolan/{obrolan}/balas', [Admin\ObrolanController::class, 'balas'])->name('obrolan.balas');
+    Route::post('obrolan/{obrolan}/selesai', [Admin\ObrolanController::class, 'selesai'])->name('obrolan.selesai');
 
     Route::get('pesanan', [Admin\PesananController::class, 'index'])->name('pesanan.index');
     Route::get('pesanan/{pesanan}', [Admin\PesananController::class, 'show'])->name('pesanan.show');
