@@ -271,7 +271,7 @@
         <div class="container">
             <span style="display:inline-flex;align-items:center;gap:6px;"><x-icon name="recycle" :size="14"/> Furnitur dari 100% kayu daur ulang — ramah lingkungan</span>
             <span style="display:inline-flex;align-items:center;gap:14px;">
-                <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;"><x-icon name="instagram" :size="14"/> @{{ config('toko.instagram') }}</a>
+                <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;"><x-icon name="instagram" :size="14"/> {{ '@'.config('toko.instagram') }}</a>
                 <a href="https://wa.me/{{ config('toko.whatsapp') }}?text={{ urlencode(config('toko.whatsapp_text')) }}" target="_blank" rel="noopener">Bantuan (WA)</a>
                 @auth <a href="{{ route('akun.pesanan') }}">Lacak Pesanan</a> @endauth
             </span>
@@ -362,18 +362,18 @@
                 <div>
                     <div style="margin-bottom:12px;"><x-logo :size="38" light /></div>
                     <p>{{ config('toko.tagline') }}. Setiap pembelian Anda membantu mengurangi limbah kayu.</p>
-                    <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" style="font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:6px;"><x-icon name="instagram" :size="16"/> @{{ config('toko.instagram') }}</a>
+                    <a href="https://instagram.com/{{ config('toko.instagram') }}" target="_blank" rel="noopener" style="font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:6px;"><x-icon name="instagram" :size="16"/> {{ '@'.config('toko.instagram') }}</a>
                 </div>
                 <div><h4>Belanja</h4><a href="{{ route('produk.index') }}">Semua Produk</a><a href="{{ route('produk.index', ['sort' => 'terlaris']) }}">Produk Terlaris</a><a href="#">Promo & Bundle</a></div>
                 <div><h4>Bantuan</h4><a href="https://wa.me/{{ config('toko.whatsapp') }}?text={{ urlencode(config('toko.whatsapp_text')) }}" target="_blank" rel="noopener">Chat Admin (WhatsApp)</a><a href="#">Cara Belanja</a><a href="#">Kebijakan Retur</a></div>
                 <div><h4>Hubungi Kami</h4>
                     <p style="display:flex;align-items:center;gap:7px;"><x-icon name="mail" :size="15"/> {{ config('toko.email') }}</p>
                     <p style="display:flex;align-items:center;gap:7px;"><x-icon name="phone" :size="15"/> {{ config('toko.telepon') }}</p>
-                    <p style="display:flex;align-items:center;gap:7px;"><x-icon name="instagram" :size="15"/> @{{ config('toko.instagram') }}</p>
+                    <p style="display:flex;align-items:center;gap:7px;"><x-icon name="instagram" :size="15"/> {{ '@'.config('toko.instagram') }}</p>
                 </div>
             </div>
         </div>
-        <div class="foot-bottom">© {{ date('Y') }} {{ config('toko.nama') }} — Dibuat dengan  untuk bumi.</div>
+        <div class="foot-bottom">© {{ date('Y') }} {{ config('toko.nama') }} — Dibuat dengan <span style="color:#e2574c;">&hearts;</span> untuk bumi.</div>
     </footer>
 
     <script>
