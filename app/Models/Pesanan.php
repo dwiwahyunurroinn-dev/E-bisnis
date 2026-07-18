@@ -13,7 +13,7 @@ class Pesanan extends Model
     protected $fillable = [
         'kode', 'user_id', 'alamat_id',
         'penerima', 'telepon', 'kota', 'alamat_lengkap', 'kode_pos',
-        'kurir', 'layanan',
+        'kurir', 'layanan', 'resi',
         'subtotal', 'diskon', 'kode_voucher', 'ongkir', 'total', 'metode_bayar', 'status',
     ];
 

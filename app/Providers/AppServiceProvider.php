@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Bundle;
 use App\Models\Kategori;
+use App\Models\Produk;
+use App\Models\Promo;
 use App\Services\CartService;
+use App\Services\KatalogCache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,9 +26,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Data global navbar: daftar kategori + jumlah item keranjang.
+        // Cache katalog kedaluwarsa otomatis saat datanya berubah (Fase 6).
+        foreach ([Kategori::class, Produk::class, Promo::class, Bundle::class] as $model) {
+            $model::saved(fn () => KatalogCache::bersihkan());
+            $model::deleted(fn () => KatalogCache::bersihkan());
+        }
+
+        // Data global navbar: daftar kategori (cache) + jumlah item keranjang.
         View::composer('layouts.app', function ($view) {
-            $view->with('navKategori', Kategori::orderBy('nama')->get());
+            $view->with('navKategori', KatalogCache::navKategori());
             $view->with('cartCount', app(CartService::class)->jumlahItem());
 
             if ($user = auth()->user()) {

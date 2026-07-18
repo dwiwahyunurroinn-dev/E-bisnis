@@ -42,9 +42,14 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="field">
+                    <label>No. Resi (isi saat status Dikirim)</label>
+                    <input type="text" name="resi" value="{{ old('resi', $pesanan->resi) }}" placeholder="mis. JNE1234567890">
+                    @error('resi')<div class="err">{{ $message }}</div>@enderror
+                </div>
                 <button class="btn btn-primary btn-block" style="width:100%;">Simpan Status</button>
             </form>
-            <p style="font-size:.76rem;color:var(--ink-soft);margin-top:8px;">Mengubah ke <b>Lunas</b> dari pending akan mengurangi stok.</p>
+            <p style="font-size:.76rem;color:var(--ink-soft);margin-top:8px;">Mengubah ke <b>Lunas</b> dari pending akan mengurangi stok. Resi akan tampil di halaman pesanan pelanggan.</p>
         </div>
     </div>
 </div>

@@ -25,7 +25,8 @@ Panel admin: buka `/admin` setelah login sebagai admin.
 | **4** | Loyalty: voucher generator + bundle offers, ulasan produk, poin & tier membership | ✅ Selesai |
 | **4** | Standar marketplace: checkout wajib login, dashboard akun (profil, pesanan, buku alamat), notifikasi, auto-expire pesanan pending | ✅ Selesai |
 | **5** | **Chatbot CRM**: widget live chat di storefront, FAQ otomatis berbasis kata kunci, handoff ke admin (live chat) saat bot tak punya jawaban | ✅ Selesai |
-| **6** | Caching & optimasi query untuk traffic tinggi | ⬜ Rencana |
+| **6** | Caching katalog (kategori/promo/bundle, invalidasi otomatis) + rate limiting (login, chat) | ✅ Selesai |
+| **+** | Siap deploy: lupa/reset password (email), nomor resi pengiriman, panduan hosting (`DEPLOY.md`) | ✅ Selesai |
 
 ### Panel admin (`/admin`)
 
@@ -107,8 +108,20 @@ Saat status `pesanan` berubah menjadi `lunas`, trigger MySQL otomatis:
 > Catatan: trigger hanya berjalan pada koneksi MySQL/MariaDB. Pada SQLite (dev) trigger dilewati,
 > sehingga pengurangan stok di dev SQLite perlu ditangani di layer aplikasi nanti.
 
-## Langkah berikutnya (Fase 6)
+## Caching & hardening (Fase 6)
 
-1. Caching query katalog (produk, kategori) & dashboard admin dengan `Cache` facade.
-2. Optimasi query (eager loading, index tambahan) untuk traffic tinggi.
-3. Pertimbangkan queue untuk pengiriman notifikasi/log agar request tetap cepat.
+- **Cache katalog** (`app/Services/KatalogCache.php`): nav kategori, promo slider, dan
+  bundle di-cache 10 menit dan **di-invalidasi otomatis** saat admin mengubah
+  produk/kategori/promo/bundle (model event di `AppServiceProvider`).
+- **Rate limiting**: login (10/menit), register (5/menit), chatbot publik (kirim 20/menit)
+  — melindungi dari brute-force & spam.
+- **Lupa password**: tautan reset via email berbahasa Indonesia
+  (`/lupa-password`; di server pakai `MAIL_MAILER=sendmail`, di dev `log`).
+- **Resi pengiriman**: admin mengisi no. resi saat status *Dikirim*; tampil di halaman
+  pesanan pelanggan beserta timeline status.
+
+## Deploy ke hosting
+
+Lihat **`DEPLOY.md`** untuk panduan langkah demi langkah deploy ke shared hosting
+cPanel (Rumahweb dsb.): setup database, `.env` produksi, document root `public/`,
+cron scheduler, dan SSL.

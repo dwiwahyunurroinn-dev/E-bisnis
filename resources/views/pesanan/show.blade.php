@@ -76,6 +76,9 @@
             <div class="line"><span class="k">Penerima</span><span>{{ $pesanan->penerima }} ({{ $pesanan->telepon }})</span></div>
             <div class="line"><span class="k">Alamat</span><span style="text-align:right;max-width:60%;">{{ $pesanan->alamat_lengkap }}, {{ $pesanan->kota }} {{ $pesanan->kode_pos }}</span></div>
             <div class="line"><span class="k">Pengiriman</span><span>{{ strtoupper($pesanan->kurir) }} — {{ $pesanan->layanan }}</span></div>
+            @if ($pesanan->resi)
+                <div class="line"><span class="k">No. Resi</span><span><b style="color:var(--primary-deep);letter-spacing:.5px;">{{ $pesanan->resi }}</b></span></div>
+            @endif
         </div>
 
         <div class="card-panel panel-gap reveal">

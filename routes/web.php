@@ -32,10 +32,11 @@ Route::post('/bundle/{bundle}', [DiskonController::class, 'tambahBundle'])->name
 // Ulasan produk (wajib login)
 Route::post('/produk/{produk}/ulasan', [UlasanController::class, 'store'])->middleware('auth')->name('ulasan.store');
 
-// Live chat / chatbot FAQ (guest-friendly, seperti keranjang)
-Route::get('/obrolan', [ObrolanController::class, 'muat'])->name('obrolan.muat');
-Route::post('/obrolan', [ObrolanController::class, 'kirim'])->name('obrolan.kirim');
-Route::post('/obrolan/admin', [ObrolanController::class, 'mintaAdmin'])->name('obrolan.admin');
+// Live chat / chatbot FAQ (guest-friendly, seperti keranjang).
+// Dibatasi throttle agar tamu tidak bisa membanjiri chat/DB.
+Route::get('/obrolan', [ObrolanController::class, 'muat'])->middleware('throttle:60,1')->name('obrolan.muat');
+Route::post('/obrolan', [ObrolanController::class, 'kirim'])->middleware('throttle:20,1')->name('obrolan.kirim');
+Route::post('/obrolan/admin', [ObrolanController::class, 'mintaAdmin'])->middleware('throttle:5,1')->name('obrolan.admin');
 
 // Checkout & pesanan WAJIB LOGIN (standar marketplace).
 Route::middleware('auth')->group(function () {
@@ -53,9 +54,15 @@ Route::post('/midtrans/webhook', [PesananController::class, 'webhook'])->name('m
 // ---------- Auth ----------
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+
+    // Lupa / reset kata sandi
+    Route::get('/lupa-password', [AuthController::class, 'showLupaPassword'])->name('password.request');
+    Route::post('/lupa-password', [AuthController::class, 'kirimLinkReset'])->middleware('throttle:5,1')->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.update');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 

@@ -39,7 +39,10 @@
                 <label>Kata Sandi</label>
                 <input type="password" name="password" placeholder="••••••••">
             </div>
-            <label class="remember"><input type="checkbox" name="remember"> Ingat saya</label>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <label class="remember" style="margin-bottom:0;"><input type="checkbox" name="remember"> Ingat saya</label>
+                <a href="{{ route('password.request') }}" style="font-size:.85rem;color:var(--primary);font-weight:600;">Lupa kata sandi?</a>
+            </div>
             <button type="submit" class="btn btn-primary btn-block">Masuk →</button>
         </form>
 

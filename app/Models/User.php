@@ -37,6 +37,12 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    /** Kirim email reset kata sandi berbahasa Indonesia. */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\ResetPasswordIndo($token));
+    }
+
     public function pesanan(): HasMany
     {
         return $this->hasMany(Pesanan::class);

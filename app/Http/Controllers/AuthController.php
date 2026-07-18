@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -71,6 +72,48 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return redirect()->route('produk.index')->with('sukses', 'Selamat datang di Eco Craft, '.$user->name.'!');
+    }
+
+    /* ---------------- Lupa / reset kata sandi ---------------- */
+
+    public function showLupaPassword(): View
+    {
+        return view('auth.lupa-password');
+    }
+
+    public function kirimLinkReset(Request $request): RedirectResponse
+    {
+        $request->validate(['email' => ['required', 'email']]);
+
+        Password::sendResetLink($request->only('email'));
+
+        // Selalu tampilkan pesan yang sama agar email terdaftar tidak bisa ditebak.
+        return back()->with('sukses', 'Jika email terdaftar, tautan reset sudah kami kirim. Cek kotak masuk/spam.');
+    }
+
+    public function showResetPassword(Request $request, string $token): View
+    {
+        return view('auth.reset-password', ['token' => $token, 'email' => $request->query('email')]);
+    }
+
+    public function resetPassword(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'token'    => ['required'],
+            'email'    => ['required', 'email'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        $status = Password::reset($data, function (User $user, string $password) {
+            $user->update(['password' => $password]);
+            ActivityLog::catat('reset password', 'Auth', $user->email);
+        });
+
+        if ($status !== Password::PasswordReset) {
+            throw ValidationException::withMessages(['email' => __($status)]);
+        }
+
+        return redirect()->route('login')->with('sukses', 'Kata sandi berhasil diubah. Silakan masuk.');
     }
 
     public function logout(Request $request): RedirectResponse

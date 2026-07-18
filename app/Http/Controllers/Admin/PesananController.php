@@ -36,6 +36,7 @@ class PesananController extends Controller
     {
         $data = $request->validate([
             'status' => ['required', 'in:pending,lunas,diproses,dikirim,selesai,batal'],
+            'resi'   => ['nullable', 'string', 'max:60'],
         ]);
 
         // Bila admin menandai lunas dari pending, pakai service agar stok berkurang.
@@ -45,11 +46,19 @@ class PesananController extends Controller
             $pesanan->update(['status' => $data['status']]);
         }
 
-        ActivityLog::catat('mengubah', 'Pesanan '.$pesanan->kode, 'status → '.$data['status']);
+        if (array_key_exists('resi', $data)) {
+            $pesanan->update(['resi' => $data['resi']]);
+        }
 
-        // Beri tahu pelanggan perubahan status pesanannya.
-        Notifikasi::kirim($pesanan->user_id, 'Status pesanan diperbarui',
-            'Pesanan '.$pesanan->kode.' kini berstatus "'.ucfirst($data['status']).'".',
+        ActivityLog::catat('mengubah', 'Pesanan '.$pesanan->kode,
+            'status → '.$data['status'].($data['resi'] ?? false ? ', resi '.$data['resi'] : ''));
+
+        // Beri tahu pelanggan perubahan status pesanannya (sertakan resi bila ada).
+        $pesan = 'Pesanan '.$pesanan->kode.' kini berstatus "'.ucfirst($data['status']).'".';
+        if ($data['status'] === 'dikirim' && ! empty($data['resi'])) {
+            $pesan .= ' No. resi: '.$data['resi'];
+        }
+        Notifikasi::kirim($pesanan->user_id, 'Status pesanan diperbarui', $pesan,
             route('pesanan.show', $pesanan->kode), 'status');
 
         return back()->with('sukses', 'Status pesanan diperbarui.');

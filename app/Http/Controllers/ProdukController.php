@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bundle;
-use App\Models\Kategori;
 use App\Models\Produk;
-use App\Models\Promo;
+use App\Services\KatalogCache;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -40,10 +38,10 @@ class ProdukController extends Controller
 
         return view('produk.index', [
             'produk'        => $produk,
-            'kategori'      => Kategori::orderBy('nama')->get(),
+            'kategori'      => KatalogCache::navKategori(),
             'kategoriAktif' => $kategoriAktif,
-            'promos'        => Promo::aktif()->get(),
-            'bundles'       => Bundle::aktif()->with('produk')->get(),
+            'promos'        => KatalogCache::promoAktif(),
+            'bundles'       => KatalogCache::bundleAktif(),
         ]);
     }
 
