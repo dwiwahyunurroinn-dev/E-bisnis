@@ -30,6 +30,9 @@ class PesananService
                 }
             }
         });
+
+        // Email pembayaran diterima (di luar transaksi; gagal kirim tak menggagalkan pelunasan).
+        rescue(fn () => $pesanan->user?->notify(new \App\Notifications\PembayaranDiterima($pesanan)), null, false);
     }
 
     /**

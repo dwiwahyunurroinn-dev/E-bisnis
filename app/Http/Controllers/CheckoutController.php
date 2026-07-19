@@ -193,6 +193,9 @@ class CheckoutController extends Controller
                 : 'Pesanan '.$pesanan->kode.' menunggu pembayaran.',
             route('pesanan.show', $pesanan->kode), 'status');
 
+        // Email konfirmasi (kegagalan kirim tidak boleh menggagalkan checkout).
+        rescue(fn () => $pesanan->user->notify(new \App\Notifications\PesananDibuat($pesanan)), null, false);
+
         return redirect()->route('pesanan.show', $pesanan->kode);
     }
 

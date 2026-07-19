@@ -6,6 +6,7 @@ use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DiskonController;
+use App\Http\Controllers\HalamanController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\ObrolanController;
@@ -17,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 // ---------- Storefront ----------
 Route::get('/', [ProdukController::class, 'index'])->name('produk.index');
 Route::get('/produk/{produk}', [ProdukController::class, 'show'])->name('produk.show');
+
+// Halaman statis (cara belanja, retur, privasi, S&K)
+Route::get('/halaman/{slug}', [HalamanController::class, 'tampil'])
+    ->where('slug', '[a-z0-9-]+')->name('halaman');
 
 // Keranjang
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');

@@ -61,6 +61,11 @@ class PesananController extends Controller
         Notifikasi::kirim($pesanan->user_id, 'Status pesanan diperbarui', $pesan,
             route('pesanan.show', $pesanan->kode), 'status');
 
+        // Email "pesanan dikirim" (berisi resi) saat status berubah ke dikirim.
+        if ($data['status'] === 'dikirim') {
+            rescue(fn () => $pesanan->user?->notify(new \App\Notifications\PesananDikirim($pesanan->fresh())), null, false);
+        }
+
         return back()->with('sukses', 'Status pesanan diperbarui.');
     }
 }
