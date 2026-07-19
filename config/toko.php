@@ -11,4 +11,8 @@ return [
     'whatsapp_text' => env('TOKO_WHATSAPP_TEXT', 'Halo Admin Eco Craft, saya butuh bantuan.'),
     // Batas waktu pembayaran sebelum pesanan dibatalkan otomatis (jam).
     'pesanan_expire_jam' => (int) env('TOKO_PESANAN_EXPIRE_JAM', 24),
+
+    // Kredensial admin awal untuk seeder. WAJIB set ADMIN_PASSWORD di .env produksi!
+    'admin_email'    => env('ADMIN_EMAIL', 'admin@ecocraft.id'),
+    'admin_password' => env('ADMIN_PASSWORD', 'password'),
 ];

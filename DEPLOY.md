@@ -71,6 +71,10 @@ MAIL_MAILER=sendmail
 MAIL_FROM_ADDRESS=no-reply@domainanda.com
 MAIL_FROM_NAME="Eco Craft"
 
+# Kredensial admin awal — WAJIB isi password kuat SEBELUM migrate --seed
+ADMIN_EMAIL=admin@domainanda.com
+ADMIN_PASSWORD=GantiDenganPasswordKuat123!
+
 # Kosongkan = mode simulasi pembayaran. Isi bila punya akun Midtrans (sandbox/production).
 MIDTRANS_SERVER_KEY=
 MIDTRANS_CLIENT_KEY=
@@ -83,8 +87,9 @@ php artisan migrate --seed        # sekali saat pertama deploy
 php artisan storage:link          # agar upload gambar produk tampil
 ```
 
-> `--seed` mengisi katalog contoh + akun admin. Setelah live, **segera ganti password
-> akun `admin@ecocraft.id`** dari menu admin, atau ubah emailnya.
+> `--seed` mengisi katalog contoh + akun admin sesuai `ADMIN_EMAIL`/`ADMIN_PASSWORD`
+> di `.env` (pastikan sudah diisi password kuat pada Langkah 4). Akun demo
+> pelanggan otomatis TIDAK dibuat saat `APP_ENV=production`.
 
 ## 6. Arahkan domain ke folder `public/`
 
@@ -135,7 +140,7 @@ untuk domain Anda. Pastikan `APP_URL` di `.env` memakai `https://`.
 ## 10. Checklist akhir sebelum dinilai 🎓
 
 - [ ] `APP_DEBUG=false` — buka URL yang salah, pastikan muncul halaman 404 biasa, bukan halaman error berisi kode
-- [ ] Password akun admin default sudah diganti
+- [ ] `ADMIN_PASSWORD` di `.env` sudah diisi password kuat (bukan `password`)
 - [ ] Register akun baru → login → checkout → bayar (simulasi) → stok berkurang
 - [ ] Lupa password → email masuk (cek folder spam)
 - [ ] Chatbot menjawab FAQ; pertanyaan asing masuk ke menu Live Chat admin

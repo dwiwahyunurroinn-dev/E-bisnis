@@ -7,8 +7,12 @@ Mencakup **storefront** (etalase belanja) dan **panel admin** lengkap.
 
 | Peran | Email | Password |
 |-------|-------|----------|
-| Admin | `admin@ecocraft.id` | `password` |
-| Pelanggan | `pelanggan@contoh.com` | `password` |
+| Admin | `admin@ecocraft.id` | `password` (dev default) |
+| Pelanggan | `pelanggan@contoh.com` | `password` (hanya non-produksi) |
+
+> Kredensial admin diatur via `ADMIN_EMAIL` / `ADMIN_PASSWORD` di `.env` —
+> **wajib diganti sebelum seeding di produksi**. Akun demo pelanggan tidak
+> dibuat sama sekali saat `APP_ENV=production`.
 
 Panel admin: buka `/admin` setelah login sebagai admin.
 

@@ -18,21 +18,23 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        // Admin default
+        // Admin awal — kredensial dari .env (ADMIN_EMAIL / ADMIN_PASSWORD).
         User::updateOrCreate(
-            ['email' => 'admin@ecocraft.id'],
-            ['name' => 'Admin Eco Craft', 'password' => 'password', 'role' => 'admin', 'telepon' => '0812-0000-0001'],
+            ['email' => config('toko.admin_email')],
+            ['name' => 'Admin '.config('toko.nama'), 'password' => config('toko.admin_password'), 'role' => 'admin', 'telepon' => '0812-0000-0001'],
         );
 
-        // Pelanggan contoh + alamat utama
-        $budiUser = User::updateOrCreate(
-            ['email' => 'pelanggan@contoh.com'],
-            ['name' => 'Budi Pelanggan', 'password' => 'password', 'role' => 'pelanggan', 'telepon' => '0812-0000-0002'],
-        );
-        Alamat::updateOrCreate(
-            ['user_id' => $budiUser->id, 'label' => 'Rumah'],
-            ['penerima' => 'Budi Pelanggan', 'telepon' => '0812-0000-0002', 'kota' => 'Yogyakarta', 'alamat_lengkap' => 'Jl. Kaliurang KM 5 No. 10', 'kode_pos' => '55281', 'utama' => true],
-        );
+        // Akun demo pelanggan hanya untuk lingkungan non-produksi.
+        if (! app()->isProduction()) {
+            $budiUser = User::updateOrCreate(
+                ['email' => 'pelanggan@contoh.com'],
+                ['name' => 'Budi Pelanggan', 'password' => 'password', 'role' => 'pelanggan', 'telepon' => '0812-0000-0002'],
+            );
+            Alamat::updateOrCreate(
+                ['user_id' => $budiUser->id, 'label' => 'Rumah'],
+                ['penerima' => 'Budi Pelanggan', 'telepon' => '0812-0000-0002', 'kota' => 'Yogyakarta', 'alamat_lengkap' => 'Jl. Kaliurang KM 5 No. 10', 'kode_pos' => '55281', 'utama' => true],
+            );
+        }
 
         // Promo slider
         Promo::insert([
