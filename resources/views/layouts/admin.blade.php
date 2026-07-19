@@ -149,6 +149,7 @@
         <a href="{{ route('admin.log.index') }}" class="nav-item {{ str_starts_with($r,'admin.log')?'active':'' }}"><span class="ic"><x-icon name="clock" :size="19"/></span> Log Aktivitas</a>
 
         <div class="nav-group">Lainnya</div>
+        <a href="{{ route('admin.pengaturan.index') }}" class="nav-item {{ str_starts_with($r,'admin.pengaturan')?'active':'' }}"><span class="ic"><x-icon name="settings" :size="19"/></span> Pengaturan</a>
         <a href="{{ route('produk.index') }}" class="nav-item"><span class="ic"><x-icon name="store" :size="19"/></span> Lihat Toko</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button class="nav-item" type="submit" style="width:100%;border:none;background:none;cursor:pointer;font-family:inherit;"><span class="ic"><x-icon name="logout" :size="19"/></span> Keluar</button></form>
     </aside>

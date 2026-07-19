@@ -149,7 +149,11 @@
 
                     @if ($kanal['tipe'] === 'qris')
                         <div class="qr-wrap">
-                            @include('partials.qris', ['seed' => $pesanan->kode, 'ukuran' => 200])
+                            @if ($qrisAsli = \App\Models\Pengaturan::ambil('qris_gambar'))
+                                <img src="{{ asset('storage/'.$qrisAsli) }}" alt="QRIS {{ config('toko.nama') }}" style="width:220px;max-width:100%;border-radius:8px;border:1px solid var(--line);">
+                            @else
+                                @include('partials.qris', ['seed' => $pesanan->kode, 'ukuran' => 200])
+                            @endif
                             <div class="total-qr">Rp{{ number_format($pesanan->total, 0, ',', '.') }}</div>
                             <p style="font-size:.83rem;color:var(--ink-soft);text-align:center;max-width:380px;">
                                 Scan kode QR di atas dengan aplikasi pembayaran apa pun
@@ -199,6 +203,20 @@
                     </form>
                     <p class="sim-note">Mode simulasi aktif — tombol di atas menandai pesanan lunas tanpa transaksi nyata.</p>
                 </div>
+
+                @if ($rekening = \App\Models\Pengaturan::ambil('rekening'))
+                    <div class="card-panel panel-gap reveal">
+                        <h3>Transfer Bank Manual</h3>
+                        <p style="font-size:.85rem;color:var(--ink-soft);margin-bottom:10px;">
+                            Bisa juga transfer langsung ke rekening berikut, lalu konfirmasi via WhatsApp:
+                        </p>
+                        @foreach (preg_split('/\r\n|\r|\n/', $rekening) as $rek)
+                            @if (trim($rek) !== '')
+                                <div class="line"><span style="font-weight:700;">{{ $rek }}</span></div>
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
             @endif
 
             <div class="act-row" style="margin-top:10px;">

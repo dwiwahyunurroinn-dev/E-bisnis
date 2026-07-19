@@ -117,4 +117,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('laporan/ekspor', [Admin\LaporanController::class, 'ekspor'])->name('laporan.ekspor');
 
     Route::get('log', [Admin\ActivityLogController::class, 'index'])->name('log.index');
+
+    Route::get('pengaturan', [Admin\PengaturanController::class, 'index'])->name('pengaturan.index');
+    Route::post('pengaturan', [Admin\PengaturanController::class, 'update'])->name('pengaturan.update');
 });

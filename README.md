@@ -31,10 +31,12 @@ Panel admin: buka `/admin` setelah login sebagai admin.
 ### Panel admin (`/admin`)
 
 Dashboard (statistik + grafik penjualan 7 hari), manajemen **Produk** (CRUD +
-upload gambar dari komputer), **Pesanan** (ubah status), **Stok** (produk &
-bahan baku), **Pelanggan**, **User** (role), **Promo/Slider**, **Laporan**
-(filter periode + ekspor CSV), dan **Log Aktivitas**. Akses dijaga middleware
-`admin` (role-based).
+upload gambar dari komputer), **Pesanan** (ubah status + no. resi), **Stok**
+(produk & bahan baku), **Pelanggan**, **User** (role), **Promo/Slider**,
+**Voucher/Bundle**, **FAQ Chatbot & Live Chat**, **Laporan** (filter periode +
+ekspor CSV), **Log Aktivitas**, dan **Pengaturan Toko** (nama, logo, WhatsApp,
+Instagram, email, barcode QRIS, rekening bank — tersimpan di DB, menimpa
+default `.env`). Akses dijaga middleware `admin` (role-based).
 
 ### Pembayaran (gaya marketplace)
 
