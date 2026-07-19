@@ -58,6 +58,26 @@ class PengaturanTest extends TestCase
         Storage::disk('public')->assertExists(Pengaturan::ambil('qris_gambar'));
     }
 
+    public function test_nomor_ewallet_tampil_di_halaman_pembayaran(): void
+    {
+        Pengaturan::simpan('ewallet_ovo', '081234567890 a.n. Eco Craft');
+
+        $user = User::create(['name' => 'Budi', 'email' => 'w@x.com', 'password' => 'password']);
+        $k = Kategori::firstOrCreate(['slug' => 'meja'], ['nama' => 'Meja']);
+        $p = Produk::create(['kategori_id' => $k->id, 'nama' => 'Meja', 'slug' => 'meja-ewallet',
+            'harga' => 500000, 'berat_gram' => 5000, 'stok' => 5, 'gambar' => 'x.jpg']);
+
+        $this->post(route('keranjang.tambah', $p), ['qty' => 1]);
+        $this->actingAs($user)->post(route('checkout.store'), [
+            'nama' => 'Budi', 'telepon' => '08', 'kota' => 'Solo',
+            'alamat_lengkap' => 'Jl. A', 'pengiriman' => 'jne|REG', 'pembayaran' => 'ovo',
+        ]);
+
+        $this->actingAs($user)->get(route('pesanan.show', \App\Models\Pesanan::first()->kode))
+            ->assertSee('081234567890 a.n. Eco Craft')
+            ->assertSee('Cara bayar via OVO');
+    }
+
     public function test_rekening_tampil_di_halaman_pembayaran(): void
     {
         Pengaturan::simpan('rekening', "BCA 1234567890 a.n. Eco Craft\nBRI 555 a.n. Eco Craft");

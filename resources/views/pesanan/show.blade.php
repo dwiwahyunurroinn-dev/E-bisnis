@@ -186,11 +186,30 @@
                             </ol>
                         </details>
                     @elseif ($kanal['tipe'] === 'ewallet')
-                        <div class="line"><span class="k">Total Pembayaran</span><span><b style="color:var(--primary-deep);">Rp{{ number_format($pesanan->total, 0, ',', '.') }}</b></span></div>
-                        <p style="font-size:.85rem;color:var(--ink-soft);margin:10px 0 4px;">
-                            Klik tombol di bawah — Anda akan diarahkan ke aplikasi {{ $kanal['label'] }}
-                            untuk menyelesaikan pembayaran.
-                        </p>
+                        @php $noWallet = \App\Models\Pengaturan::ambil('ewallet_'.$pesanan->metode_bayar); @endphp
+                        @if ($noWallet)
+                            <p style="font-size:.85rem;color:var(--ink-soft);">Kirim pembayaran ke akun {{ $kanal['label'] }} berikut:</p>
+                            <div class="va-box">
+                                <span class="no" id="nomorVa" style="font-size:1.05rem;">{{ $noWallet }}</span>
+                                <button type="button" onclick="salinVa(this)">Salin</button>
+                            </div>
+                            <div class="line" style="margin-bottom:12px;"><span class="k">Total Pembayaran</span><span><b style="color:var(--primary-deep);">Rp{{ number_format($pesanan->total, 0, ',', '.') }}</b></span></div>
+                            <details class="cara">
+                                <summary>Cara bayar via {{ $kanal['label'] }}</summary>
+                                <ol>
+                                    <li>Buka aplikasi {{ $kanal['label'] }} Anda.</li>
+                                    <li>Pilih menu <b>Transfer / Kirim</b> ke nomor di atas.</li>
+                                    <li>Masukkan nominal <b>Rp{{ number_format($pesanan->total, 0, ',', '.') }}</b> lalu konfirmasi.</li>
+                                    <li>Simpan bukti pembayaran, lalu klik tombol di bawah.</li>
+                                </ol>
+                            </details>
+                        @else
+                            <div class="line"><span class="k">Total Pembayaran</span><span><b style="color:var(--primary-deep);">Rp{{ number_format($pesanan->total, 0, ',', '.') }}</b></span></div>
+                            <p style="font-size:.85rem;color:var(--ink-soft);margin:10px 0 4px;">
+                                Klik tombol di bawah — Anda akan diarahkan ke aplikasi {{ $kanal['label'] }}
+                                untuk menyelesaikan pembayaran.
+                            </p>
+                        @endif
                     @endif
 
                     <form method="POST" action="{{ route('pesanan.bayar', $pesanan->kode) }}" style="margin-top:12px;">

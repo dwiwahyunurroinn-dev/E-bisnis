@@ -28,6 +28,10 @@ class PengaturanController extends Controller
             'whatsapp_text' => ['nullable', 'string', 'max:200'],
             'instagram'     => ['nullable', 'string', 'max:60'],
             'rekening'      => ['nullable', 'string', 'max:1000'],
+            'ewallet_gopay'     => ['nullable', 'string', 'max:100'],
+            'ewallet_ovo'       => ['nullable', 'string', 'max:100'],
+            'ewallet_dana'      => ['nullable', 'string', 'max:100'],
+            'ewallet_shopeepay' => ['nullable', 'string', 'max:100'],
             'logo'          => ['nullable', 'image', 'max:2048'],
             'qris_gambar'   => ['nullable', 'image', 'max:2048'],
         ]);
@@ -39,7 +43,8 @@ class PengaturanController extends Controller
             $data['whatsapp'] = str_starts_with($wa, '0') ? '62'.substr($wa, 1) : $wa;
         }
 
-        foreach (['nama', 'tagline', 'email', 'telepon', 'whatsapp', 'whatsapp_text', 'instagram', 'rekening'] as $k) {
+        foreach (['nama', 'tagline', 'email', 'telepon', 'whatsapp', 'whatsapp_text', 'instagram', 'rekening',
+            'ewallet_gopay', 'ewallet_ovo', 'ewallet_dana', 'ewallet_shopeepay'] as $k) {
             Pengaturan::simpan($k, $data[$k] ?? null);
         }
 

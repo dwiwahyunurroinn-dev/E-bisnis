@@ -96,6 +96,17 @@
                 <div style="font-size:.76rem;color:var(--ink-soft);margin-top:6px;">Unggah gambar QRIS asli dari penyedia pembayaran Anda. Akan tampil di halaman bayar metode QRIS.</div>
             </div>
         </div>
+        <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:8px;">Nomor Tujuan E-Wallet (tampil di halaman bayar; kosongkan bila tidak dipakai)</label>
+        <div class="two" style="margin-bottom:4px;">
+            @foreach (['gopay' => ['GoPay', '#00aed6'], 'ovo' => ['OVO', '#4c3494'], 'dana' => ['DANA', '#108ee9'], 'shopeepay' => ['ShopeePay', '#ee4d2d']] as $w => [$labelW, $warnaW])
+                <div class="field">
+                    <label style="display:inline-flex;align-items:center;gap:7px;">
+                        <span style="background:{{ $warnaW }};color:#fff;font-size:.66rem;font-weight:800;padding:3px 8px;border-radius:6px;">{{ $labelW }}</span>
+                    </label>
+                    <input type="text" name="ewallet_{{ $w }}" value="{{ old('ewallet_'.$w, $nilai['ewallet_'.$w] ?? '') }}" placeholder="08xxx a.n. Nama Toko">
+                </div>
+            @endforeach
+        </div>
         <div class="field">
             <label>Rekening Bank (untuk transfer manual — satu rekening per baris)</label>
             <textarea name="rekening" rows="3" placeholder="BCA 1234567890 a.n. Eco Craft&#10;BRI 0987654321 a.n. Eco Craft">{{ old('rekening', $nilai['rekening'] ?? '') }}</textarea>
