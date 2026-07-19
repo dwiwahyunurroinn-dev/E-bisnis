@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Pengaturan toko dari panel admin menimpa config('toko.*') tiap request.
         $middleware->web(append: \App\Http\Middleware\TerapkanPengaturan::class);
 
+        // Header keamanan standar (anti-clickjacking, nosniff, dsb).
+        $middleware->web(append: \App\Http\Middleware\HeaderKeamanan::class);
+
         // Webhook Midtrans datang dari server eksternal tanpa token CSRF.
         $middleware->validateCsrfTokens(except: [
             'midtrans/webhook',

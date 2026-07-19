@@ -50,7 +50,7 @@
         .stat .lbl { font-size:.8rem; color:var(--ink-soft); display:flex; align-items:center; gap:8px; }
         .stat .val { font-size:1.6rem; font-weight:800; margin-top:8px; }
         .stat .val.sm { font-size:1.25rem; }
-        .panel { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow-sm); padding:20px 22px; margin-top:18px; }
+        .panel { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow-sm); padding:20px 22px; margin-top:18px; overflow-x:auto; }
         .panel h2 { font-size:1.05rem; font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
         .panel h2 .btn, .panel h2 a.btn { margin-left:auto; }
         table { width:100%; border-collapse:collapse; font-size:.88rem; }

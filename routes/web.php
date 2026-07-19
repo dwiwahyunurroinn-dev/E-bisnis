@@ -29,8 +29,8 @@ Route::post('/keranjang/{produk}', [KeranjangController::class, 'tambah'])->name
 Route::patch('/keranjang/{produk}', [KeranjangController::class, 'ubah'])->name('keranjang.ubah');
 Route::delete('/keranjang/{produk}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
-// Voucher & bundle (diskon)
-Route::post('/voucher', [DiskonController::class, 'pasangVoucher'])->name('voucher.pasang');
+// Voucher & bundle (diskon). Throttle mencegah brute-force menebak kode voucher.
+Route::post('/voucher', [DiskonController::class, 'pasangVoucher'])->middleware('throttle:15,1')->name('voucher.pasang');
 Route::delete('/voucher', [DiskonController::class, 'lepasVoucher'])->name('voucher.lepas');
 Route::post('/bundle/{bundle}', [DiskonController::class, 'tambahBundle'])->name('bundle.tambah');
 

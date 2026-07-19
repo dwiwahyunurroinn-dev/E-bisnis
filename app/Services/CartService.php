@@ -15,7 +15,7 @@ class CartService
 {
     private const KEY = 'keranjang';
     private const KEY_VOUCHER = 'voucher_kode';
-    private const KEY_BUNDLE  = 'bundle_diskon'; // ['nama' => , 'nilai' => int]
+    private const KEY_BUNDLE  = 'bundle_id';
 
     public function tambah(int $produkId, int $qty = 1): void
     {
@@ -75,25 +75,48 @@ class CartService
 
     /* ---------------- Bundle ---------------- */
 
-    /** Tambahkan paket: masukkan produknya + catat penghematan paket. */
+    /** Tambahkan paket: masukkan produknya + catat bundle yang dipilih. */
     public function tambahBundle(Bundle $bundle): void
     {
         foreach ($bundle->produk as $p) {
             $this->tambah($p->id, (int) $p->pivot->jumlah);
         }
 
-        $diskon = (int) $bundle->hemat() + $this->diskonBundle();
-        session()->put(self::KEY_BUNDLE, ['nama' => $bundle->nama, 'nilai' => $diskon]);
+        session()->put(self::KEY_BUNDLE, $bundle->id);
     }
 
+    private function bundle(): ?Bundle
+    {
+        $id = session()->get(self::KEY_BUNDLE);
+
+        return $id ? Bundle::with('produk')->find($id) : null;
+    }
+
+    /**
+     * Diskon paket dihitung ulang dari isi keranjang saat ini: hanya berlaku
+     * bila SEMUA produk paket masih ada dengan jumlah minimal sesuai paket
+     * (mencegah manipulasi: ambil diskon lalu hapus barangnya).
+     */
     public function diskonBundle(): int
     {
-        return (int) (session()->get(self::KEY_BUNDLE)['nilai'] ?? 0);
+        $bundle = $this->bundle();
+        if (! $bundle || ! $bundle->aktif) {
+            return 0;
+        }
+
+        $raw = $this->raw();
+        foreach ($bundle->produk as $p) {
+            if (($raw[$p->id] ?? 0) < (int) $p->pivot->jumlah) {
+                return 0;
+            }
+        }
+
+        return (int) $bundle->hemat();
     }
 
     public function namaBundle(): ?string
     {
-        return session()->get(self::KEY_BUNDLE)['nama'] ?? null;
+        return $this->diskonBundle() > 0 ? $this->bundle()?->nama : null;
     }
 
     public function diskonTotal(): int

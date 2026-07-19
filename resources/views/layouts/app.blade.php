@@ -262,7 +262,17 @@
         .empty .big { font-size: 3.4rem; margin-bottom: 12px; }
 
         @media (max-width: 900px) { .trust { grid-template-columns: repeat(2, 1fr); } .foot-grid { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 640px) { .header-actions .label { display: none; } .hero-banner { padding: 32px 24px; } .hero-banner h1 { font-size: 1.55rem; } }
+        @media (max-width: 640px) {
+            body { overflow-x: clip; }                     /* jaring pengaman anti-geser horizontal */
+            .header-actions .label { display: none; }
+            /* Header 2 baris: logo+aksi di atas, kolom cari full-width di bawah (pola marketplace) */
+            .header-main { flex-wrap: wrap; height: auto; padding: 10px 0 12px; gap: 10px 12px; }
+            .searchbar { order: 3; flex-basis: 100%; max-width: none; }
+            .catnav { position: static; }                  /* header lebih tinggi, sticky offset tak lagi pas */
+            .hero-banner { padding: 32px 24px; }
+            .hero-banner h1 { font-size: 1.55rem; }
+            .trust { grid-template-columns: 1fr; }
+        }
     </style>
     @stack('styles')
 </head>
