@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
 
+        // Percayai header proxy (X-Forwarded-*) agar HTTPS terdeteksi benar
+        // saat di belakang tunnel (cloudflared/ngrok) atau reverse proxy hosting.
+        $middleware->trustProxies(at: '*');
+
         // Pengaturan toko dari panel admin menimpa config('toko.*') tiap request.
         $middleware->web(append: \App\Http\Middleware\TerapkanPengaturan::class);
 
