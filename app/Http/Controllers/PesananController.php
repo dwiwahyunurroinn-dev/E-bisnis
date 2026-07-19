@@ -42,7 +42,8 @@ class PesananController extends Controller
             }
         }
 
-        $this->pesananService->tandaiLunas($pesanan, 'simulasi');
+        // Simulasi: tandai lunas dengan metode yang dipilih saat checkout.
+        $this->pesananService->tandaiLunas($pesanan, $pesanan->metode_bayar ?: 'simulasi');
 
         return redirect()->route('pesanan.show', $pesanan->kode)
             ->with('sukses', 'Pembayaran berhasil! Pesanan Anda sedang diproses.');

@@ -27,6 +27,13 @@
         <div class="panel" style="margin-top:0;">
             <h2>Pelanggan</h2>
             <p style="font-size:.9rem;"><b>{{ $pesanan->user?->name }}</b><br>{{ $pesanan->user?->email }}<br>{{ $pesanan->telepon }}</p>
+            @if ($pesanan->labelMetode())
+                <h2 style="margin-top:18px;">Pembayaran</h2>
+                <p style="font-size:.9rem;">{{ $pesanan->labelMetode() }}
+                    @if ($pesanan->isCod())<br><b style="color:var(--danger);">Tagih tunai Rp{{ number_format($pesanan->total, 0, ',', '.') }} saat pengiriman</b>@endif
+                    @if ($pesanan->nomorVa())<br>VA: {{ $pesanan->nomorVa() }}@endif
+                </p>
+            @endif
             <h2 style="margin-top:18px;">Alamat</h2>
             <p style="font-size:.9rem;">{{ $pesanan->penerima }}<br>{{ $pesanan->alamat_lengkap }}, {{ $pesanan->kota }} {{ $pesanan->kode_pos }}</p>
         </div>

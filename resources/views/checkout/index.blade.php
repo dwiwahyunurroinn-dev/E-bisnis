@@ -14,6 +14,9 @@
     .ship-opt .so-main b { font-size: .92rem; }
     .ship-opt .so-main span { display: block; font-size: .78rem; color: var(--ink-soft); }
     .ship-opt .so-price { font-weight: 800; color: var(--primary-deep); }
+    .pay-group { font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--ink-soft); margin: 16px 0 8px; }
+    .pay-group:first-of-type { margin-top: 0; }
+    .pay-logo { flex-shrink: 0; min-width: 54px; height: 30px; padding: 0 8px; border-radius: 7px; color: #fff; font-size: .68rem; font-weight: 800; display: grid; place-items: center; letter-spacing: .3px; }
     .mini-item { display: flex; justify-content: space-between; font-size: .85rem; padding: 7px 0; color: var(--ink-soft); }
     .mini-item b { color: var(--ink); font-weight: 600; }
     .summary { position: sticky; top: 132px; }
@@ -108,6 +111,50 @@
                         </label>
                     @endforeach
                 </div>
+
+                {{-- Metode Pembayaran --}}
+                <div class="card-panel reveal">
+                    <h3>Metode Pembayaran</h3>
+                    @error('pembayaran')<div class="err" style="margin-bottom:10px;">{{ $message }}</div>@enderror
+
+                    @php
+                        $kanal = config('pembayaran.kanal');
+                        $grup = [
+                            'QRIS'                          => ['qris'],
+                            'Virtual Account (m-Banking / ATM)' => ['va_bca', 'va_bri', 'va_bni', 'va_mandiri'],
+                            'E-Wallet'                      => ['gopay', 'ovo', 'dana', 'shopeepay'],
+                            'Lainnya'                       => ['cod'],
+                        ];
+                        $ket = [
+                            'qris'      => 'Scan satu kode QR, bayar dari aplikasi apa pun',
+                            'va_bca'    => 'Transfer via m-BCA, KlikBCA, atau ATM BCA',
+                            'va_bri'    => 'Transfer via BRImo atau ATM BRI',
+                            'va_bni'    => 'Transfer via BNI Mobile atau ATM BNI',
+                            'va_mandiri'=> 'Transfer via Livin\' by Mandiri atau ATM',
+                            'gopay'     => 'Saldo GoPay / GoPay Later',
+                            'ovo'       => 'Saldo OVO Cash / OVO Points',
+                            'dana'      => 'Saldo DANA',
+                            'shopeepay' => 'Saldo ShopeePay',
+                            'cod'       => 'Bayar tunai ke kurir saat pesanan tiba',
+                        ];
+                        $badge = ['qris' => 'QRIS', 'va_bca' => 'BCA', 'va_bri' => 'BRI', 'va_bni' => 'BNI', 'va_mandiri' => 'MANDIRI',
+                                  'gopay' => 'gopay', 'ovo' => 'OVO', 'dana' => 'DANA', 'shopeepay' => 'SPay', 'cod' => 'COD'];
+                    @endphp
+
+                    @foreach ($grup as $judulGrup => $kodes)
+                        <div class="pay-group">{{ $judulGrup }}</div>
+                        @foreach ($kodes as $kode)
+                            <label class="ship-opt pay-opt {{ $kode === 'qris' ? 'sel' : '' }}">
+                                <input type="radio" name="pembayaran" value="{{ $kode }}" {{ $kode === 'qris' ? 'checked' : '' }}>
+                                <span class="pay-logo" style="background:{{ $kanal[$kode]['warna'] }};">{{ $badge[$kode] }}</span>
+                                <div class="so-main">
+                                    <b>{{ $kanal[$kode]['label'] }}</b>
+                                    <span>{{ $ket[$kode] }}</span>
+                                </div>
+                            </label>
+                        @endforeach
+                    @endforeach
+                </div>
             </div>
 
             {{-- Ringkasan --}}
@@ -169,11 +216,19 @@
     function fmt(n) { return 'Rp' + n.toLocaleString('id-ID'); }
     document.querySelectorAll('input[name="pengiriman"]').forEach(r => {
         r.addEventListener('change', function () {
-            document.querySelectorAll('.ship-opt').forEach(o => o.classList.remove('sel'));
+            document.querySelectorAll('input[name="pengiriman"]').forEach(x => x.closest('.ship-opt').classList.remove('sel'));
             this.closest('.ship-opt').classList.add('sel');
             const ongkir = parseInt(this.dataset.ongkir, 10);
             document.getElementById('ongkirLabel').textContent = fmt(ongkir);
             document.getElementById('totalLabel').textContent = fmt(BASE + ongkir);
+        });
+    });
+
+    // Highlight pilihan metode pembayaran (tidak mengganggu grup radio lain).
+    document.querySelectorAll('input[name="pembayaran"]').forEach(r => {
+        r.addEventListener('change', function () {
+            document.querySelectorAll('.pay-opt').forEach(o => o.classList.remove('sel'));
+            this.closest('.pay-opt').classList.add('sel');
         });
     });
 </script>

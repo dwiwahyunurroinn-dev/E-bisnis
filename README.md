@@ -36,11 +36,21 @@ bahan baku), **Pelanggan**, **User** (role), **Promo/Slider**, **Laporan**
 (filter periode + ekspor CSV), dan **Log Aktivitas**. Akses dijaga middleware
 `admin` (role-based).
 
-### Pembayaran (Midtrans)
+### Pembayaran (gaya marketplace)
 
-Isi `MIDTRANS_SERVER_KEY` & `MIDTRANS_CLIENT_KEY` di `.env` untuk mengaktifkan
-pembayaran asli (Snap) + webhook di `/midtrans/webhook`. Bila kosong, aplikasi
-memakai mode **simulasi** (tombol bayar manual). Lihat `app/Services/PaymentService.php`.
+Checkout menyediakan pilihan metode ala Tokopedia (`config/pembayaran.php`):
+
+- **QRIS** — halaman bayar menampilkan kode QR (simulasi) + total.
+- **Virtual Account m-banking** (BCA, BRI, BNI, Mandiri) — nomor VA deterministik
+  per pesanan, tombol salin, dan panduan cara bayar (m-banking/ATM).
+- **E-Wallet** (GoPay, OVO, DANA, ShopeePay).
+- **COD** — pesanan langsung dikonfirmasi (stok berkurang), bayar tunai ke kurir;
+  admin melihat tagihan tunai di detail pesanan.
+
+Halaman bayar menampilkan **batas waktu + hitung mundur**. Mode default = simulasi
+(tombol "Saya Sudah Bayar"). Isi `MIDTRANS_SERVER_KEY` & `MIDTRANS_CLIENT_KEY` di
+`.env` untuk pembayaran asli via Midtrans Snap (+ webhook `/midtrans/webhook`) —
+QRIS/VA/e-wallet ditangani Midtrans, COD tetap oleh aplikasi.
 
 ### Live chat & chatbot FAQ (Fase 5)
 

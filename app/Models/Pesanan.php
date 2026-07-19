@@ -38,4 +38,34 @@ class Pesanan extends Model
     {
         return $this->hasMany(DetailPesanan::class, 'pesanan_id');
     }
+
+    /* ---------------- Metode pembayaran ---------------- */
+
+    /** Info kanal pembayaran dari config/pembayaran.php. */
+    public function kanalBayar(): ?array
+    {
+        return config('pembayaran.kanal.'.$this->metode_bayar);
+    }
+
+    public function labelMetode(): ?string
+    {
+        return $this->kanalBayar()['label']
+            ?? ($this->metode_bayar ? ucfirst($this->metode_bayar) : null);
+    }
+
+    public function isCod(): bool
+    {
+        return $this->metode_bayar === 'cod';
+    }
+
+    /** Nomor Virtual Account deterministik dari kode pesanan (mode simulasi). */
+    public function nomorVa(): ?string
+    {
+        $kanal = $this->kanalBayar();
+        if (($kanal['tipe'] ?? null) !== 'va') {
+            return null;
+        }
+
+        return $kanal['prefix'].str_pad((string) (crc32($this->kode) % 10000000000), 10, '0', STR_PAD_LEFT);
+    }
 }

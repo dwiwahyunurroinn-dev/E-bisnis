@@ -10,10 +10,12 @@ use App\Models\Pesanan;
 use App\Models\User;
 use App\Services\CartService;
 use App\Services\OngkirService;
+use App\Services\PesananService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -21,6 +23,7 @@ class CheckoutController extends Controller
     public function __construct(
         private readonly CartService $cart,
         private readonly OngkirService $ongkir,
+        private readonly PesananService $pesananService,
     ) {}
 
     /** Halaman single-page checkout. */
@@ -80,9 +83,11 @@ class CheckoutController extends Controller
             'alamat_lengkap' => ['required', 'string'],
             'kode_pos'       => ['nullable', 'string', 'max:10'],
             'pengiriman'     => ['required', 'string'], // format: "kurir|layanan"
+            'pembayaran'     => ['nullable', Rule::in(array_keys(config('pembayaran.kanal')))],
             'alamat_id'      => ['nullable', 'integer'],
             'simpan_alamat'  => ['nullable', 'boolean'],
         ]);
+        $metodeBayar = $data['pembayaran'] ?? 'qris';
 
         $items = $this->cart->items();
 
@@ -106,7 +111,7 @@ class CheckoutController extends Controller
         $voucher  = $this->cart->voucher();
         $total    = max(0, $subtotal - $diskon) + $opsi['ongkir'];
 
-        $pesanan = DB::transaction(function () use ($data, $request, $items, $subtotal, $diskon, $voucher, $opsi, $total, $kurir) {
+        $pesanan = DB::transaction(function () use ($data, $request, $items, $subtotal, $diskon, $voucher, $opsi, $total, $kurir, $metodeBayar) {
             // Checkout wajib login (standar marketplace) -> pakai akun aktif.
             $user = auth()->user();
 
@@ -142,6 +147,7 @@ class CheckoutController extends Controller
                 'kode_voucher' => $voucher?->kode,
                 'ongkir'       => $opsi['ongkir'],
                 'total'        => $total,
+                'metode_bayar' => $metodeBayar,
                 'status'       => 'pending',
             ]);
 
@@ -165,18 +171,26 @@ class CheckoutController extends Controller
         });
 
         $this->cart->kosongkan();
-        ActivityLog::catat('pesanan baru', $pesanan->kode, 'Total Rp'.number_format($total, 0, ',', '.'));
+        ActivityLog::catat('pesanan baru', $pesanan->kode,
+            'Total Rp'.number_format($total, 0, ',', '.').' ('.$pesanan->labelMetode().')');
+
+        // COD: langsung dikonfirmasi (stok berkurang), bayar tunai saat kurir tiba.
+        if ($metodeBayar === 'cod') {
+            $this->pesananService->tandaiLunas($pesanan, 'cod');
+        }
 
         // Notifikasi ke admin
         Notifikasi::keSemuaAdmin(
             'Pesanan baru masuk',
-            $pesanan->kode.' senilai Rp'.number_format($total, 0, ',', '.'),
+            $pesanan->kode.' senilai Rp'.number_format($total, 0, ',', '.').' — '.$pesanan->labelMetode(),
             route('admin.pesanan.show', $pesanan),
             'pesanan',
         );
         // Notifikasi ke pelanggan
         Notifikasi::kirim($pesanan->user_id, 'Pesanan dibuat',
-            'Pesanan '.$pesanan->kode.' menunggu pembayaran.',
+            $metodeBayar === 'cod'
+                ? 'Pesanan '.$pesanan->kode.' (COD) dikonfirmasi. Siapkan uang tunai saat kurir tiba.'
+                : 'Pesanan '.$pesanan->kode.' menunggu pembayaran.',
             route('pesanan.show', $pesanan->kode), 'status');
 
         return redirect()->route('pesanan.show', $pesanan->kode);
