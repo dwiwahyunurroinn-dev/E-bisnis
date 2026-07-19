@@ -10,7 +10,6 @@
     .auth-card .sub { text-align: center; color: var(--ink-soft); font-size: .9rem; margin: 6px 0 22px; }
     .auth-alt { text-align: center; margin-top: 18px; font-size: .9rem; color: var(--ink-soft); }
     .auth-alt a { color: var(--primary); font-weight: 700; }
-    .hint { background: var(--primary-mint); border: 1px dashed var(--primary); border-radius: 10px; padding: 10px 14px; font-size: .8rem; color: var(--primary-deep); margin-bottom: 18px; }
     .remember { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--ink-soft); margin-bottom: 16px; }
     .remember input { width: 16px; height: 16px; accent-color: var(--primary); }
 </style>
@@ -22,8 +21,6 @@
         <div style="text-align:center;margin-bottom:6px;"><x-mascot :size="90" /></div>
         <h1>Selamat Datang</h1>
         <p class="sub">Masuk ke akun {{ config('toko.nama') }} Anda</p>
-
-        <div class="hint">Demo admin: <b>admin@ecocraft.id</b> / <b>password</b></div>
 
         @if ($errors->any())
             <div class="field"><div class="err">{{ $errors->first() }}</div></div>
