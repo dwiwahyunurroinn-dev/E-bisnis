@@ -136,6 +136,23 @@ Saat status `pesanan` berubah menjadi `lunas`, trigger MySQL otomatis:
 - **Resi pengiriman**: admin mengisi no. resi saat status *Dikirim*; tampil di halaman
   pesanan pelanggan beserta timeline status.
 
+## Demo online via tunnel (tanpa hosting)
+
+Untuk presentasi, laptop bisa "di-online-kan" sementara dengan Cloudflare Tunnel:
+
+```bash
+php artisan serve                                   # terminal 1
+cloudflared tunnel --url http://127.0.0.1:8000      # terminal 2 -> dapat URL https publik
+```
+
+Anti-419 / anti-macet:
+1. Selalu buka URL **https://** yang baru di **tab baru** (URL berganti tiap tunnel restart).
+2. Setelah `migrate:fresh` / restart server, **refresh halaman dulu** sebelum submit form
+   (token CSRF menempel pada sesi lama).
+3. `bootstrap/app.php` sudah mem-proxy-trust (`trustProxies '*'`) sehingga HTTPS dan
+   IP asli pengunjung terdeteksi benar — rate limit dihitung per pengunjung, bukan
+   digabung satu IP tunnel.
+
 ## Deploy ke hosting
 
 Lihat **`DEPLOY.md`** untuk panduan langkah demi langkah deploy ke shared hosting

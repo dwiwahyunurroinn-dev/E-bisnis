@@ -450,8 +450,11 @@
                 }
             }
 
+            // URL relatif: mengikuti domain & skema halaman (aman di localhost maupun tunnel https).
+            const URL_OBROLAN = '/obrolan';
+
             async function muat() {
-                const res = await fetch('{{ route('obrolan.muat') }}', { headers: { 'Accept': 'application/json' } });
+                const res = await fetch(URL_OBROLAN, { headers: { 'Accept': 'application/json' } });
                 if (res.ok) render(await res.json());
             }
 
@@ -470,21 +473,30 @@
                 const pesan = input.value.trim();
                 if (!pesan) return;
                 input.value = '';
-                const res = await fetch('{{ route('obrolan.kirim') }}', {
+                const res = await fetch(URL_OBROLAN, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
                     body: JSON.stringify({ pesan }),
                 });
-                if (res.ok) render(await res.json());
+                if (res.ok) { render(await res.json()); }
+                else if (res.status === 419) { tampilkanKadaluarsa(); }
             });
 
             mintaAdminBtn.addEventListener('click', async () => {
-                const res = await fetch('{{ route('obrolan.admin') }}', {
+                const res = await fetch(URL_OBROLAN + '/admin', {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
                 });
-                if (res.ok) render(await res.json());
+                if (res.ok) { render(await res.json()); }
+                else if (res.status === 419) { tampilkanKadaluarsa(); }
             });
+
+            // Sesi kedaluwarsa (mis. server di-restart): minta pengguna refresh, jangan diam saja.
+            function tampilkanKadaluarsa() {
+                body.insertAdjacentHTML('beforeend',
+                    '<div class="chat-msg bot"><div class="chat-bubble">Sesi Anda kedaluwarsa. Muat ulang halaman (F5) lalu kirim lagi ya.</div></div>');
+                body.scrollTop = body.scrollHeight;
+            }
         })();
     </script>
     @yield('scripts')

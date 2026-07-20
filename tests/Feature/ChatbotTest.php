@@ -64,6 +64,26 @@ class ChatbotTest extends TestCase
         $this->assertSame('selesai', $obrolan->fresh()->status);
     }
 
+    public function test_multiadmin_semua_menerima_notifikasi_dan_bisa_membalas(): void
+    {
+        $admin1 = User::create(['name' => 'Admin1', 'email' => 'a1@x.com', 'password' => 'password', 'role' => 'admin']);
+        $admin2 = User::create(['name' => 'Admin2', 'email' => 'a2@x.com', 'password' => 'password', 'role' => 'admin']);
+
+        // Pelanggan bertanya sesuatu yang tak dikenal bot -> handoff.
+        $this->postJson(route('obrolan.kirim'), ['pesan' => 'Pertanyaan khusus untuk manusia']);
+
+        // KEDUA admin dapat notifikasi.
+        $this->assertDatabaseHas('notifikasis', ['user_id' => $admin1->id, 'tipe' => 'chat']);
+        $this->assertDatabaseHas('notifikasis', ['user_id' => $admin2->id, 'tipe' => 'chat']);
+
+        // Keduanya bisa membuka inbox dan salah satunya membalas.
+        $obrolan = Obrolan::first();
+        $this->actingAs($admin1)->get(route('admin.obrolan.show', $obrolan))->assertOk();
+        $this->actingAs($admin2)->post(route('admin.obrolan.balas', $obrolan), ['pesan' => 'Halo dari Admin2'])
+            ->assertRedirect();
+        $this->assertDatabaseHas('obrolan_pesans', ['obrolan_id' => $obrolan->id, 'pengirim' => 'admin']);
+    }
+
     public function test_halaman_admin_faq_dan_obrolan_bisa_diakses(): void
     {
         $admin = User::create(['name' => 'Admin', 'email' => 'admin3@x.com', 'password' => 'password', 'role' => 'admin']);
