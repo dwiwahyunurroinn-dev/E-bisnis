@@ -42,6 +42,9 @@
             @if ($promo->gambar)<div class="thumb-sm" style="width:180px;height:60px;margin-bottom:8px;"><img src="{{ asset('storage/'.$promo->gambar) }}" alt=""></div>@endif
             <input type="file" name="gambar" id="pilihGambar" accept="image/*">
             <input type="hidden" name="gambar_crop" id="gambarCrop">
+            <div style="font-size:.78rem;color:var(--ink-soft);margin-top:6px;display:flex;align-items:center;gap:6px;">
+                <x-icon name="edit" :size="14"/> Pilih foto — alat penyesuai (geser &amp; zoom agar pas bingkai banner) akan muncul otomatis di bawah.
+            </div>
             @error('gambar')<div class="err">{{ $message }}</div>@enderror
             @error('gambar_crop')<div class="err">{{ $message }}</div>@enderror
 
