@@ -102,6 +102,41 @@ class PraDeployTest extends TestCase
         $this->assertDatabaseMissing('produk', ['nama' => 'Meja Uji']);
     }
 
+    /* ---------------- Crop banner promo ---------------- */
+
+    public function test_hasil_crop_banner_promo_tersimpan(): void
+    {
+        Storage::fake('public');
+
+        // JPEG kecil valid sebagai data URL (meniru hasil kanvas crop di browser).
+        $im = imagecreatetruecolor(30, 10);
+        ob_start();
+        imagejpeg($im);
+        $jpeg = base64_encode((string) ob_get_clean());
+
+        $this->actingAs($this->admin())->post(route('admin.promo.store'), [
+            'judul' => 'Promo Crop', 'warna' => '#2c8064', 'urutan' => 1, 'aktif' => 1,
+            'gambar_crop' => 'data:image/jpeg;base64,'.$jpeg,
+        ])->assertRedirect();
+
+        $promo = \App\Models\Promo::where('judul', 'Promo Crop')->first();
+        $this->assertNotNull($promo->gambar);
+        Storage::disk('public')->assertExists($promo->gambar);
+    }
+
+    public function test_data_crop_palsu_diabaikan(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->admin())->post(route('admin.promo.store'), [
+            'judul' => 'Promo Palsu', 'warna' => '#2c8064', 'urutan' => 1,
+            'gambar_crop' => 'data:image/jpeg;base64,BUKANGAMBAR===',
+        ])->assertRedirect();
+
+        // Promo tetap dibuat, tapi tanpa gambar (data tak valid diabaikan).
+        $this->assertNull(\App\Models\Promo::where('judul', 'Promo Palsu')->first()->gambar);
+    }
+
     /* ---------------- Keamanan: diskon bundle tak bisa dimanipulasi ---------------- */
 
     public function test_diskon_bundle_hangus_bila_item_paket_dihapus(): void
