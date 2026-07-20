@@ -53,8 +53,8 @@
             <div class="slides" id="slides">
                 @foreach ($daftarSlide as $s)
                     <div class="slide" style="background:linear-gradient(120deg, {{ $s->warna }}, #03734a);
-                        @if(!empty($s->gambar)) background-image:linear-gradient(120deg, {{ $s->warna }}cc, #03734acc), url('{{ asset('storage/'.$s->gambar) }}'); background-size:cover; background-position:center; @endif">
-                        <span class="slide-deco"><x-icon name="leaf" :size="190"/></span>
+                        @if(!empty($s->gambar)) background-image:linear-gradient(90deg, rgba(10,18,14,.62), rgba(10,18,14,.18) 55%, rgba(10,18,14,0)), url('{{ asset('storage/'.$s->gambar) }}'); background-size:cover; background-position:center; @endif">
+                        @if (empty($s->gambar))<span class="slide-deco"><x-icon name="leaf" :size="190"/></span>@endif
                         @if (!empty($s->label))<span class="s-label"><x-icon name="tag" :size="14"/> {{ $s->label }}</span>@endif
                         <h1>{{ $s->judul }}</h1>
                         @if (!empty($s->subjudul))<p>{{ $s->subjudul }}</p>@endif
